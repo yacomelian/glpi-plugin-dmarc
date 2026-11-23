@@ -1,0 +1,278 @@
+{# DMARC plugin configuration #}
+<div class="container-fluid">
+  <form method="post" action="{{ action }}" autocomplete="off" style="max-width: 60rem">
+    {% if csrf %}<input type="hidden" name="_glpi_csrf_token" value="{{ csrf }}">{% endif %}
+
+    <div class="d-flex align-items-center mb-3">
+      <h2 class="mb-0"><i class="ti ti-mail-check"></i> {{ __('DMARC — configuration', 'dmarc') }}</h2>
+      <a href="{{ dashboard }}" class="btn btn-sm btn-outline-secondary ms-auto"><i class="ti ti-layout-dashboard"></i> {{ __('Dashboard', 'dmarc') }}</a>
+    </div>
+
+    {% if test %}
+      {% if test.ok %}
+        <div class="alert alert-{{ test.folder_exists ? 'success' : 'warning' }}">
+          <b>{{ __('Connection OK.', 'dmarc') }}</b>
+          {% if test.folder_exists %}
+            {{ __('The folder "%1$s" has %2$s mails; %3$s pending import', 'dmarc')|format(s.folder, test.exists|formatted_integer, test.pending|formatted_integer) }}{% if s.since_date %} {{ __('since %s', 'dmarc')|format(s.since_date|formatted_date) }}{% endif %}.
+          {% else %}
+            <b>{{ __('The folder "%s" does not exist.', 'dmarc')|format(s.folder) }}</b>
+          {% endif %}
+          {% if test.move_folder_exists is same as(false) %}<div>{{ __('The destination folder "%s" does not exist: it will be created by the first collection.', 'dmarc')|format(s.move_folder) }}</div>{% endif %}
+          <details class="mt-1"><summary>{{ __('Mailbox folders (%d)', 'dmarc')|format(test.folders|length) }}</summary>
+            <div class="small font-monospace">{{ test.folders|join(' · ') }}</div></details>
+        </div>
+      {% else %}
+        <div class="alert alert-danger"><b>{{ __('Could not connect:', 'dmarc') }}</b> {{ test.error }}</div>
+      {% endif %}
+    {% endif %}
+
+    {# ------------------------------------------------------------------ #}
+    <div class="card mb-3">
+      <div class="card-header"><h3 class="card-title">{{ __('Entity', 'dmarc') }}</h3></div>
+      <div class="card-body row g-3">
+        <div class="col-md-8">
+          <label class="form-label">{{ __('Entity of the plugin', 'dmarc') }}</label>
+          <select name="entities_id" class="form-select">
+            {% for id, name in entities %}<option value="{{ id }}" {{ s.entities_id == id ? 'selected' }}>{{ name }}</option>{% endfor %}
+          </select>
+          <label class="form-check mt-1"><input type="checkbox" name="entity_recursive" value="1" class="form-check-input" {{ s.entity_recursive ? 'checked' }}>
+            <span class="form-check-label">{{ __('Also visible from its sub-entities', 'dmarc') }}</span></label>
+        </div>
+        <div class="col-md-4 form-hint">
+          {{ __('Tools › DMARC is only shown when the active entity is this one (or a tree that includes it) and the profile has the DMARC right.', 'dmarc') }}
+          {{ __('Alerts belong to this entity (for "Entity administrator" in the notifications).', 'dmarc') }}
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-3">
+      <div class="card-header"><h3 class="card-title">{{ __('Mailbox', 'dmarc') }}</h3></div>
+      <div class="card-body row g-3">
+        <div class="col-md-6">
+          <label class="form-label">{{ __('IMAP server', 'dmarc') }}</label>
+          <input type="text" name="host" value="{{ s.host }}" class="form-control" placeholder="imap.gmail.com">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label">{{ __('Port', 'dmarc') }}</label>
+          <input type="number" name="port" value="{{ s.port }}" class="form-control">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">{{ __('Encryption', 'dmarc') }}</label>
+          <select name="encryption" class="form-select">
+            {% for v, l in {'ssl': 'SSL/TLS (993)', 'starttls': 'STARTTLS (143)', 'none': __('None (tests only)', 'dmarc')} %}
+              <option value="{{ v }}" {{ s.encryption == v ? 'selected' }}>{{ l }}</option>
+            {% endfor %}
+          </select>
+          <label class="form-check mt-1"><input type="checkbox" name="validate_cert" value="1" class="form-check-input" {{ s.validate_cert ? 'checked' }}> <span class="form-check-label">{{ __('Validate the certificate', 'dmarc') }}</span></label>
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label">{{ __('User (mailbox address)', 'dmarc') }}</label>
+          <input type="text" name="username" value="{{ s.username }}" class="form-control" placeholder="dmarc@example.com">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">{{ __('Authentication', 'dmarc') }}</label>
+          <select name="auth" class="form-select" onchange="document.querySelectorAll('.dmarc-auth').forEach(e => e.classList.toggle('d-none', e.dataset.auth !== this.value))">
+            <option value="oauth_google" {{ s.auth == 'oauth_google' ? 'selected' }}>{{ __('Google (Gmail / Workspace): OAuth with consent', 'dmarc') }}</option>
+            <option value="password" {{ s.auth == 'password' ? 'selected' }}>{{ __('User and password (any IMAP server)', 'dmarc') }}</option>
+          </select>
+        </div>
+
+        <div class="col-12 dmarc-auth {{ s.auth != 'oauth_google' ? 'd-none' }}" data-auth="oauth_google">
+          <label class="form-label">{{ __('Connection with Google (OAuth, with the consent of the mailbox owner)', 'dmarc') }}</label>
+          {% if oauth_connected %}
+            <div class="alert alert-success py-2 mb-2 small">
+              {{ __('Connected as %s. The permission only gives access to that mailbox.', 'dmarc')|format(s.oauth_email) }}
+              <button type="submit" name="disconnect" value="1" class="btn btn-sm btn-outline-danger ms-2"
+                data-confirm="{{ __('Disconnect from Google? Reports will not be collected until you connect again.', 'dmarc') }}"
+                onclick="return confirm(this.dataset.confirm)">{{ __('Disconnect', 'dmarc') }}</button>
+            </div>
+          {% endif %}
+          <div class="row g-2">
+            <div class="col-md-7">
+              <label class="form-label small mb-0">{{ __('OAuth client ID', 'dmarc') }}</label>
+              <input type="text" name="oauth_client_id" value="{{ s.oauth_client_id }}" class="form-control font-monospace" placeholder="1234567890-abc….apps.googleusercontent.com" autocomplete="off">
+            </div>
+            <div class="col-md-5">
+              <label class="form-label small mb-0">{{ __('Client secret', 'dmarc') }}</label>
+              <input type="password" name="oauth_client_secret" value="" class="form-control" placeholder="{{ has_oauth_secret ? '•••••••• ' ~ __('(saved; empty = keep)', 'dmarc') : '' }}" autocomplete="new-password">
+              {% if has_oauth_secret %}<label class="form-check mt-1 small"><input type="checkbox" name="clear_oauth_secret" value="1" class="form-check-input"> <span class="form-check-label">{{ __('Delete the saved secret', 'dmarc') }}</span></label>{% endif %}
+            </div>
+          </div>
+          <div class="mt-2">
+            <button type="submit" name="connect" value="1" class="btn btn-primary"><i class="ti ti-brand-google"></i> {{ oauth_connected ? __('Connect with Google again', 'dmarc') : __('Save and connect with Google', 'dmarc') }}</button>
+          </div>
+          <div class="form-hint mt-2">
+            <b>{{ __('In Google Cloud', 'dmarc') }}</b> ({{ __('once', 'dmarc') }}): {{ __('Credentials › Create credentials › OAuth client ID › type "Web application". In "Authorized redirect URIs" enter exactly:', 'dmarc') }}
+            <div><code class="user-select-all">{{ redirect_uri }}</code></div>
+            {{ __('In the consent screen choose the user type "Internal" (with "External" in testing, Google expires the permission after 7 days).', 'dmarc') }}
+            {{ __('Press the button: Google will ask to sign in with the mailbox account and to allow access to Gmail (%s, the only scope that allows IMAP).', 'dmarc')|format(scope) }}
+            {{ __('It is only saved if the authorized account is the mailbox one. No service account or domain-wide delegation is used.', 'dmarc') }}
+            {{ __('The GLPI address must be https (the "URL of the application" in Setup › General). The server needs outgoing access to', 'dmarc') }}
+            <code>oauth2.googleapis.com:443</code> · <code>imap.gmail.com:993</code>.
+          </div>
+        </div>
+
+        <div class="col-md-6 dmarc-auth {{ s.auth != 'password' ? 'd-none' }}" data-auth="password">
+          <label class="form-label">{{ __('Password', 'dmarc') }}</label>
+          <input type="password" name="password" value="" class="form-control" placeholder="{{ has_password ? '•••••••• ' ~ __('(saved; empty = keep)', 'dmarc') : '' }}" autocomplete="new-password">
+          {% if has_password %}<label class="form-check mt-1"><input type="checkbox" name="clear_password" value="1" class="form-check-input"> <span class="form-check-label">{{ __('Delete the saved password', 'dmarc') }}</span></label>{% endif %}
+          <div class="form-hint">{{ __('For any IMAP server. Gmail no longer accepts the normal password; an app password may work, but Google discourages it and the administrator can block it: with Gmail use OAuth.', 'dmarc') }}</div>
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label">{{ __('Reports folder', 'dmarc') }}</label>
+          <input type="text" name="folder" value="{{ s.folder }}" class="form-control">
+          <div class="form-hint">{{ __('In Gmail the label is the folder (sub-labels with "/").', 'dmarc') }}</div>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">{{ __('Import mails received since', 'dmarc') }}</label>
+          <input type="date" name="since_date" value="{{ s.since_date }}" class="form-control">
+          <div class="form-hint">{{ __('For the first load. Empty: the whole folder.', 'dmarc') }}</div>
+        </div>
+
+        <div class="col-12">
+          <label class="form-label">{{ __('Mailbox mode', 'dmarc') }}</label>
+          <label class="form-check"><input type="radio" name="mode" value="readonly" class="form-check-input" {{ s.mode != 'write' ? 'checked' }}
+            onchange="document.getElementById('dmarc-write').classList.add('d-none')">
+            <span class="form-check-label"><b>{{ __('Read-only', 'dmarc') }}</b>: {{ __('opens the folder in examine mode; nothing is marked as read, moved or deleted.', 'dmarc') }}</span></label>
+          <label class="form-check"><input type="radio" name="mode" value="write" class="form-check-input" {{ s.mode == 'write' ? 'checked' }}
+            onchange="document.getElementById('dmarc-write').classList.remove('d-none')">
+            <span class="form-check-label"><b>{{ __('Read-write', 'dmarc') }}</b>: {{ __('after importing a mail (or if it was already imported) it does this:', 'dmarc') }}</span></label>
+          <div id="dmarc-write" class="ms-4 mt-1 row g-2 {{ s.mode != 'write' ? 'd-none' }}">
+            <div class="col-md-5">
+              <select name="post_action" class="form-select">
+                {% for v, l in {'seen': __('Mark it as read', 'dmarc'), 'move': __('Move it to another folder', 'dmarc'), 'delete': __('Delete it', 'dmarc')} %}
+                  <option value="{{ v }}" {{ s.post_action == v ? 'selected' }}>{{ l }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-7">
+              <input type="text" name="move_folder" value="{{ s.move_folder }}" class="form-control" placeholder="{{ __('Destination folder (when moving)', 'dmarc') }}">
+            </div>
+            <div class="col-12 form-hint">{{ __('Mails with errors or that are not reports are left where they are.', 'dmarc') }}
+              {{ __('In Gmail, "delete" from IMAP depends on the account option (Settings › Forwarding and POP/IMAP): remove the label, move to the trash or delete.', 'dmarc') }}
+              {{ __('"Move" replaces the reports label with the destination one.', 'dmarc') }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {# ------------------------------------------------------------------ #}
+    <div class="card mb-3">
+      <div class="card-header"><h3 class="card-title">{{ __('Processing and data', 'dmarc') }}</h3></div>
+      <div class="card-body row g-3">
+        <div class="col-md-4">
+          <label class="form-label">{{ __('Mails per run of the automatic action', 'dmarc') }}</label>
+          <input type="number" name="batch_size" value="{{ s.batch_size }}" min="1" max="5000" class="form-control">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">{{ __('Maximum size of a mail (MB)', 'dmarc') }}</label>
+          <input type="number" name="max_message_mb" value="{{ s.max_message_mb }}" min="1" max="100" class="form-control">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">{{ __('Keep the data (months, at most %d)', 'dmarc')|format(max_months) }}</label>
+          <input type="number" name="retention_months" value="{{ s.retention_months }}" min="1" max="{{ max_months }}" class="form-control">
+        </div>
+        <div class="col-md-6">
+          <label class="form-check"><input type="checkbox" name="keep_raw" value="1" class="form-check-input" {{ s.keep_raw ? 'checked' }}> <span class="form-check-label">{{ __('Keep the original XML of each report (compressed)', 'dmarc') }}</span></label>
+          <label class="form-check"><input type="checkbox" name="rdns" value="1" class="form-check-input" {{ s.rdns ? 'checked' }}> <span class="form-check-label">{{ __('Look up the reverse name (PTR) of the IPs', 'dmarc') }}</span></label>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">{{ __('Networks of our own mail servers', 'dmarc') }}</label>
+          <input type="text" name="own_networks" value="{{ s.own_networks }}" class="form-control font-monospace" placeholder="192.0.2.0/24, 2001:db8::/32">
+          <div class="form-hint">{{ __('Their IPs are shown as "Own server".', 'dmarc') }}</div>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">{{ __('Compliance goal to recommend tightening the policy (%)', 'dmarc') }}</label>
+          <input type="number" name="compliance_target" value="{{ s.compliance_target }}" min="50" max="100" class="form-control">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">{{ __('Days with the same policy before recommending the next step', 'dmarc') }}</label>
+          <input type="number" name="none_days" value="{{ s.none_days }}" min="1" max="365" class="form-control">
+        </div>
+      </div>
+    </div>
+
+    {# ------------------------------------------------------------------ #}
+    <div class="card mb-3">
+      <div class="card-header"><h3 class="card-title">{{ __('AbuseIPDB (reputation of the sending IPs)', 'dmarc') }}</h3></div>
+      <div class="card-body row g-3">
+        <div class="col-12">
+          <label class="form-check form-switch"><input type="checkbox" name="abuseipdb_enabled" value="1" class="form-check-input" {{ s.abuseipdb_enabled ? 'checked' }}>
+            <span class="form-check-label"><b>{{ __('Query AbuseIPDB', 'dmarc') }}</b> {{ __('for each public IP of the reports', 'dmarc') }}</span></label>
+          <div class="form-hint">{{ __('It is queried in the background ("resolve" automatic action and after each collection), the IPs failing DMARC first.', 'dmarc') }}
+            {{ __('The result is kept on the source and not asked again until it expires. The panels show the % with a link to abuseipdb.com.', 'dmarc') }}
+            {{ __('Outgoing access to api.abuseipdb.com:443 is needed.', 'dmarc') }}</div>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">{{ __('API key', 'dmarc') }}</label>
+          <input type="password" name="abuseipdb_key" value="" class="form-control" autocomplete="new-password"
+                 placeholder="{{ abuseipdb.own_key ? '•••••••• ' ~ __('(saved; empty = keep)', 'dmarc') : '' }}">
+          {% if abuseipdb.own_key %}<label class="form-check mt-1"><input type="checkbox" name="clear_abuseipdb_key" value="1" class="form-check-input"> <span class="form-check-label">{{ __('Delete the saved key', 'dmarc') }}</span></label>{% endif %}
+          {% if not abuseipdb.own_key %}
+            <div class="form-hint"><span class="text-red">{{ __('No key: nothing is queried.', 'dmarc') }}</span> {{ __('Create one for free at abuseipdb.com (Account › API).', 'dmarc') }}</div>
+          {% endif %}
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">{{ __('Query an IP again after (days)', 'dmarc') }}</label>
+          <input type="number" name="abuseipdb_days" value="{{ s.abuseipdb_days }}" min="1" max="365" class="form-control">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">{{ __('Maximum queries per day', 'dmarc') }}</label>
+          <input type="number" name="abuseipdb_daily_max" value="{{ s.abuseipdb_daily_max }}" min="1" class="form-control">
+          <div class="form-hint">{{ __('The free plan allows 1,000 per day per account.', 'dmarc') }}</div>
+        </div>
+        <div class="col-12 small text-muted">
+          {{ _n('Today: %d query.', 'Today: %d queries.', abuseipdb.used_today, 'dmarc')|format(abuseipdb.used_today) }}
+          {{ __('IPs with data: %1$d of %2$d sources.', 'dmarc')|format(abuseipdb.known, abuseipdb.sources) }}
+          {% if abuseipdb.blocked_until and abuseipdb.blocked_until|date('U') > 'now'|date('U') %}<span class="text-orange">{{ __('AbuseIPDB asked to wait until %s', 'dmarc')|format(abuseipdb.blocked_until|formatted_datetime) }}.</span>{% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-3">
+      <div class="card-header"><h3 class="card-title">{{ __('Mail notifications', 'dmarc') }}</h3></div>
+      <div class="card-body row g-3">
+        <div class="col-12">
+          <label class="form-check form-switch"><input type="checkbox" name="notify_enabled" value="1" class="form-check-input" {{ s.notify_enabled ? 'checked' }}>
+            <span class="form-check-label"><b>{{ __('Send notifications', 'dmarc') }}</b> ({{ __('global switch of the plugin', 'dmarc') }})</span></label>
+          <div class="form-hint">{{ __('GLPI notifications are used: recipients, texts and activation of each one in', 'dmarc') }}
+            <a href="{{ notifications_url }}">{{ __('Setup › Notifications', 'dmarc') }}</a> ({{ __('type "DMARC alert"', 'dmarc') }}). {{ __('GLPI mail notifications must be enabled.', 'dmarc') }}
+            {{ __('With the switch off the alerts are still recorded in the Alerts tab.', 'dmarc') }}</div>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">{{ __('Minimum messages to alert about a source', 'dmarc') }}</label>
+          <input type="number" name="notify_min_messages" value="{{ s.notify_min_messages }}" min="1" class="form-control">
+          <div class="form-hint">{{ __('For unclassified sources. Unauthorized ones always alert.', 'dmarc') }}</div>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">{{ __('Alert if an authorized source passes less than (%)', 'dmarc') }}</label>
+          <input type="number" name="notify_failing_threshold" value="{{ s.notify_failing_threshold }}" min="1" max="100" class="form-control">
+          <div class="form-hint">{{ __('Computed over the last 7 days.', 'dmarc') }}</div>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">{{ __('Alert if a domain has no reports for (days)', 'dmarc') }}</label>
+          <input type="number" name="notify_no_reports_days" value="{{ s.notify_no_reports_days }}" min="1" max="60" class="form-control">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">{{ __('Alert after consecutive collection failures', 'dmarc') }}</label>
+          <input type="number" name="notify_collect_errors" value="{{ s.notify_collect_errors }}" min="1" max="100" class="form-control">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">{{ __('Weekly summary', 'dmarc') }}</label>
+          <select name="notify_summary_day" class="form-select">
+            {% for v, l in {0: __('Do not send', 'dmarc'), 1: __('On Mondays', 'dmarc'), 2: __('On Tuesdays', 'dmarc'), 3: __('On Wednesdays', 'dmarc'), 4: __('On Thursdays', 'dmarc'), 5: __('On Fridays', 'dmarc'), 6: __('On Saturdays', 'dmarc'), 7: __('On Sundays', 'dmarc')} %}
+              <option value="{{ v }}" {{ s.notify_summary_day == v ? 'selected' }}>{{ l }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-flex gap-2 mb-4">
+      <button type="submit" name="save" value="1" class="btn btn-primary"><i class="ti ti-device-floppy"></i> {{ __('Save', 'dmarc') }}</button>
+      <button type="submit" name="test" value="1" class="btn btn-outline-primary"><i class="ti ti-plug-connected"></i> {{ __('Save and test the connection', 'dmarc') }}</button>
+    </div>
+  </form>
+</div>

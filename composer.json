@@ -1,0 +1,28 @@
+{
+    "name": "__REPO__",
+    "description": "DMARC aggregate reports for GLPI",
+    "type": "glpi-plugin",
+    "license": "GPL-2.0-or-later",
+    "authors": [
+        {"name": "Yaco Melian"}
+    ],
+    "require": {
+        "php": ">=8.2"
+    },
+    "require-dev": {
+        "glpi-project/coding-standard": "*",
+        "php-parallel-lint/php-parallel-lint": "^1.4"
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "platform": {"php": "8.2.99"},
+        "sort-packages": true,
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
+    },
+    "scripts": {
+        "lint": "parallel-lint --exclude vendor .",
+        "cs": "phpcs"
+    }
+}

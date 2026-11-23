@@ -1,0 +1,588 @@
+{# DMARC dashboard (Tools > DMARC) #}
+{% macro num(n) %}<span class="text-nowrap">{{ (n ?? 0)|formatted_integer }}</span>{% endmacro %}
+{% macro pct(n) %}<span class="text-nowrap">{{ call('Html::formatNumber', [n ?? 0, false, 1]) }} %</span>{% endmacro %}
+{% macro policy(p) %}
+  {%- set colors = {'reject': 'green', 'quarantine': 'yellow', 'none': 'red'} -%}
+  {%- if p %}<span class="badge bg-{{ colors[p] ?? 'secondary' }}-lt">p={{ p }}</span>{% else %}<span class="text-muted">—</span>{% endif -%}
+{% endmacro %}
+{% macro level(l, label) %}
+  {%- set colors = {'ok': 'green', 'warning': 'yellow', 'danger': 'red', 'info': 'blue'} -%}
+  <span class="badge bg-{{ colors[l] ?? 'secondary' }} text-{{ colors[l] ?? 'secondary' }}-fg">{{ label }}</span>
+{% endmacro %}
+{% macro srcstatus(s, labels) %}
+  {%- set colors = {0: 'secondary', 1: 'green', 2: 'red', 3: 'azure'} -%}
+  <span class="badge bg-{{ colors[s] ?? 'secondary' }}-lt">{{ labels[s] ?? s }}</span>
+{% endmacro %}
+{% macro bar(p) %}
+  <div class="progress progress-sm" style="min-width:5rem" title="{{ call('Html::formatNumber', [p ?? 0, false, 1]) }} %">
+    <div class="progress-bar bg-{{ p >= 98 ? 'green' : (p >= 90 ? 'yellow' : 'red') }}" style="width: {{ (p ?? 0) + 0 }}%"></div>
+  </div>
+{% endmacro %}
+{% import _self as m %}
+{% import '@dmarc/macros.html.twig' as dm %}
+
+{% set q = filters|merge({'tab': tab}) %}
+{% set csrf_input %}{% if csrf %}<input type="hidden" name="_glpi_csrf_token" value="{{ csrf }}">{% endif %}{% endset %}
+{# JSON inside <script>: <, >, &, ' and " escaped so that data from the reports cannot close the tag #}
+{% set json_safe = constant('JSON_HEX_TAG') b-or constant('JSON_HEX_AMP') b-or constant('JSON_HEX_APOS') b-or constant('JSON_HEX_QUOT') %}
+
+<div class="container-fluid dmarc-dashboard">
+  <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+    <h2 class="mb-0 me-3"><i class="ti ti-mail-check"></i> DMARC</h2>
+    <form method="get" action="{{ self }}" class="d-flex flex-wrap align-items-end gap-2 ms-auto" id="dmarc-filters">
+      <input type="hidden" name="tab" value="{{ tab }}">
+      <div>
+        <label class="form-label small mb-0">{{ __('Period', 'dmarc') }}</label>
+        <select name="period" class="form-select form-select-sm" onchange="document.getElementById('dmarc-custom').classList.toggle('d-none', this.value !== 'custom'); if (this.value !== 'custom') this.form.submit()">
+          {% for v, l in {
+            '7': _n('%d day', '%d days', 7, 'dmarc')|format(7),
+            '30': _n('%d day', '%d days', 30, 'dmarc')|format(30),
+            '90': _n('%d day', '%d days', 90, 'dmarc')|format(90),
+            '365': _n('%d month', '%d months', 12, 'dmarc')|format(12),
+            '730': _n('%d year', '%d years', 2, 'dmarc')|format(2),
+            '0': __('Everything', 'dmarc'),
+            'custom': __('Custom', 'dmarc')} %}
+            <option value="{{ v }}" {{ filters.period == v ? 'selected' }}>{{ l }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div id="dmarc-custom" class="d-flex gap-1 {{ filters.period != 'custom' ? 'd-none' }}">
+        <div><label class="form-label small mb-0">{{ __('From', 'dmarc') }}</label><input type="date" name="from" value="{{ filters.from }}" class="form-control form-control-sm"></div>
+        <div><label class="form-label small mb-0">{{ __('To', 'dmarc') }}</label><input type="date" name="to" value="{{ filters.to }}" class="form-control form-control-sm"></div>
+      </div>
+      {% if options.domains|length > 1 %}
+      <div>
+        <label class="form-label small mb-0">{{ __('Domains', 'dmarc') }}</label>
+        <input type="hidden" name="domain" id="dmarc-domain" value="{{ filters.domain }}">
+        <div class="dropdown" id="dmarc-domains">
+          <button type="button" class="form-select form-select-sm text-start text-truncate" style="max-width: 16rem; min-width: 9rem" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+            {%- if selected_domains is empty %}{{ __('All (%d)', 'dmarc')|format(options.domains|length) }}{% elseif selected_domains|length == 1 %}{{ selected_domains|first }}{% else %}{{ __('%1$d of %2$d', 'dmarc')|format(selected_domains|length, options.domains|length) }}{% endif -%}
+          </button>
+          <div class="dropdown-menu p-2" style="min-width: 16rem">
+            {% if options.domains|length > 8 %}<input type="search" class="form-control form-control-sm mb-2" placeholder="{{ __('Search…', 'dmarc') }}" data-dmarc-dom-search>{% endif %}
+            <div class="d-flex gap-3 small mb-1">
+              <a href="#" data-dmarc-dom="all">{{ __('All', 'dmarc') }}</a><a href="#" data-dmarc-dom="none">{{ __('None', 'dmarc') }}</a>
+            </div>
+            <div style="max-height: 18rem; overflow-y: auto">
+              {% for d in options.domains %}
+                <label class="form-check mb-1" data-dmarc-dom-item="{{ d }}">
+                  <input type="checkbox" class="form-check-input dmarc-dom" value="{{ d }}" {{ selected_domains is empty or d in selected_domains ? 'checked' }}>
+                  <span class="form-check-label">{{ d }}</span>
+                </label>
+              {% endfor %}
+            </div>
+            <button type="submit" class="btn btn-sm btn-primary w-100 mt-2"><i class="ti ti-filter"></i> {{ __('Apply', 'dmarc') }}</button>
+          </div>
+        </div>
+      </div>
+      {% else %}
+      <input type="hidden" name="domain" value="{{ filters.domain }}">
+      {% endif %}
+      <div>
+        <label class="form-label small mb-0">{{ __('Reported by', 'dmarc') }}</label>
+        <select name="org" class="form-select form-select-sm" onchange="this.form.submit()">
+          <option value="">{{ __('All', 'dmarc') }}</option>
+          {% for o in options.orgs %}<option value="{{ o }}" {{ filters.org == o ? 'selected' }}>{{ o }}</option>{% endfor %}
+        </select>
+      </div>
+      <div>
+        <label class="form-label small mb-0">{{ __('Group by', 'dmarc') }}</label>
+        <select name="group" class="form-select form-select-sm" onchange="this.form.submit()">
+          {% for v, l in {'day': __('Day', 'dmarc'), 'week': __('Week', 'dmarc'), 'month': __('Month', 'dmarc')} %}<option value="{{ v }}" {{ filters.group == v ? 'selected' }}>{{ l }}</option>{% endfor %}
+        </select>
+      </div>
+      <button type="submit" class="btn btn-sm btn-primary"><i class="ti ti-filter"></i> {{ __('Apply', 'dmarc') }}</button>
+      {% if config_url %}<a href="{{ config_url }}" class="btn btn-sm btn-outline-secondary" title="{{ __('Configuration', 'dmarc') }}"><i class="ti ti-settings"></i></a>{% endif %}
+    </form>
+  </div>
+  <div class="text-muted small mb-2">{{ __('From %1$s to %2$s', 'dmarc')|format(filters.from|formatted_date, filters.to|formatted_date) }}{% if selected_domains is not empty %} · {{ selected_domains|join(', ') }}{% endif %}{% if filters.org %} · {{ __('reports from %s', 'dmarc')|format(filters.org) }}{% endif %}</div>
+
+  <ul class="nav nav-tabs mb-3">
+    {% for key, t in tabs %}
+      <li class="nav-item">
+        <a class="nav-link {{ key == tab ? 'active' }}" href="{{ self }}?{{ filters|merge({'tab': key})|url_encode }}"><i class="{{ t[1] }}"></i> {{ t[0] }}</a>
+      </li>
+    {% endfor %}
+  </ul>
+
+  {# ======================================================================= #}
+  {% if tab == 'summary' %}
+    {% set t = data.totals %}
+    {% if data.empty %}
+      <div class="alert alert-info">
+        {{ __('There are no reports yet.', 'dmarc') }}
+        {% if not data.configured %}
+          {{ __('Configure the mailbox in the plugin configuration.', 'dmarc') }}{% if config_url %} <a href="{{ config_url }}">{{ __('Configuration', 'dmarc') }}</a>{% endif %}
+        {% else %}
+          {{ __('They will be collected by the "collect" automatic action or with "Collect now" in the Collection tab.', 'dmarc') }}
+        {% endif %}
+        {{ __('You can also import files (.eml, .zip, .gz, .xml) in the Collection tab.', 'dmarc') }}
+      </div>
+    {% endif %}
+    <div class="row row-cards mb-3">
+      {% set cards = [
+        [__('Reported messages', 'dmarc'), m.num(t.total), t.total - data.prev.total, 'num', 'ti ti-mail'],
+        [__('Pass DMARC', 'dmarc'), m.pct(t.pass_pct), t.pass_pct - data.prev.pass_pct, 'pct', 'ti ti-shield-check'],
+        [__('DKIM aligned', 'dmarc'), m.pct(t.dkim_pct), t.dkim_pct - data.prev.dkim_pct, 'pct', 'ti ti-signature'],
+        [__('SPF aligned', 'dmarc'), m.pct(t.spf_pct), t.spf_pct - data.prev.spf_pct, 'pct', 'ti ti-route'],
+        [__('Quarantined / rejected', 'dmarc'), m.num(t.quarantine) ~ ' / ' ~ m.num(t.reject), null, '', 'ti ti-ban'],
+        [__('Suspicious sources', 'dmarc'), m.num(t.suspicious_sources), null, '', 'ti ti-spy'],
+        [__('New unclassified sources', 'dmarc'), m.num(t.new_unclassified), null, '', 'ti ti-question-mark'],
+        [__('Reports', 'dmarc'), m.num(t.reports), t.reports - data.prev.reports, 'num', 'ti ti-file-text'],
+      ] %}
+      {% for c in cards %}
+        <div class="col-6 col-md-4 col-xl-3">
+          <div class="card card-sm"><div class="card-body">
+            <div class="d-flex align-items-center">
+              <span class="avatar bg-primary-lt me-3"><i class="{{ c[4] }}"></i></span>
+              <div>
+                <div class="text-muted small">{{ c[0] }}</div>
+                <div class="h3 mb-0">{{ c[1]|raw }}{# only numbers formatted by the macros #}</div>
+                {% if c[2] is not null and data.prev.total > 0 %}
+                  <div class="small {{ c[2] >= 0 ? 'text-green' : 'text-red' }}">
+                    {{ c[2] >= 0 ? '▲' : '▼' }}
+                    {% if c[3] == 'pct' %}{{ __('%s points', 'dmarc')|format(call('Html::formatNumber', [c[2]|abs, false, 1])) }}{% else %}{{ (c[2]|abs)|formatted_integer }}{% endif %}
+                    {{ __('vs. the previous period', 'dmarc') }}
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+          </div></div>
+        </div>
+      {% endfor %}
+    </div>
+    <div class="text-muted small mb-3">
+      {{ __('Last report received: %s', 'dmarc')|format(t.last_day ? t.last_day|formatted_date : '—') }} · {{ __('last import: %s', 'dmarc')|format(t.last_import ? t.last_import|formatted_datetime : '—') }}
+      {% if data.alerts > 0 %} · <a href="{{ self }}?{{ q|merge({'tab': 'alerts'})|url_encode }}" class="text-red"><i class="ti ti-bell"></i> {{ _n('%d open alert', '%d open alerts', data.alerts, 'dmarc')|format(data.alerts) }}</a>{% endif %}
+    </div>
+
+    <div class="card mb-3">
+      <div class="card-header"><h3 class="card-title">{{ __('Status by domain', 'dmarc') }}</h3></div>
+      <div class="table-responsive">
+        <table class="table table-vcenter card-table table-sm">
+          <thead><tr>
+            <th>{{ __('Domain', 'dmarc') }}</th><th>{{ __('Status', 'dmarc') }}</th><th>{{ __('Published policy', 'dmarc') }}</th><th class="text-end">{{ __('Messages', 'dmarc') }}</th><th>{{ __('Pass DMARC', 'dmarc') }}</th>
+            <th class="text-end" title="{{ __('Messages from authorized sources that fail', 'dmarc') }}">{{ __('Authorized failing', 'dmarc') }}</th>
+            <th class="text-end" title="{{ __('Failing messages from unclassified or unauthorized sources', 'dmarc') }}">{{ __('Suspicious', 'dmarc') }}</th>
+            <th>{{ __('Last report', 'dmarc') }}</th>
+          </tr></thead>
+          <tbody>
+          {% for d in data.domains %}
+            <tr>
+              <td><a href="{{ self }}?{{ q|merge({'domain': d.domain, 'tab': 'evolution'})|url_encode }}"><b>{{ d.domain }}</b></a>
+                {% if d.domains_id %}<a href="{{ root }}/front/domain.form.php?id={{ d.domains_id }}" title="{{ __('Domain in GLPI', 'dmarc') }}"><i class="ti ti-external-link"></i></a>{% endif %}</td>
+              <td>{{ m.level(d.state.level, d.state.label) }}<div class="small text-muted">{{ d.state.reasons|join(', ') }}</div></td>
+              <td>{{ m.policy(d.policy.p) }}
+                {% if d.policy.sp %}<span class="badge bg-secondary-lt">sp={{ d.policy.sp }}</span>{% endif %}
+                {% if d.policy.pct is not null and d.policy.pct < 100 %}<span class="badge bg-orange-lt">pct={{ d.policy.pct }}</span>{% endif %}
+                {% if d.policy.since %}<div class="small text-muted">{{ __('since %s', 'dmarc')|format(d.policy.since|formatted_date) }}</div>{% endif %}</td>
+              <td class="text-end">{{ m.num(d.total) }}</td>
+              <td>{{ m.bar(d.pass_pct) }}<span class="small">{{ m.pct(d.pass_pct) }}</span></td>
+              <td class="text-end {{ d.auth_fail > 0 ? 'text-red fw-bold' }}">{{ m.num(d.auth_fail) }}</td>
+              <td class="text-end {{ d.susp_fail > 0 ? 'text-orange' }}">{{ m.num(d.susp_fail) }}{% if d.susp_fail_src %} <span class="small text-muted">({{ _n('%d IP', '%d IPs', d.susp_fail_src, 'dmarc')|format(d.susp_fail_src) }})</span>{% endif %}</td>
+              <td>{{ d.last_report ? d.last_report|formatted_date : '—' }}{% if d.days_silent is not null and d.days_silent > 1 %} <span class="small text-muted">({{ _n('%d day ago', '%d days ago', d.days_silent, 'dmarc')|format(d.days_silent) }})</span>{% endif %}</td>
+            </tr>
+          {% else %}
+            <tr><td colspan="8" class="text-muted">{{ __('No data in the period.', 'dmarc') }}</td></tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="row row-cards mb-3">
+      <div class="col-lg-8"><div class="card"><div class="card-header"><h3 class="card-title">{{ __('Volume and result', 'dmarc') }}</h3></div>
+        <div class="card-body"><div class="dmarc-chart" data-chart="volume" style="height: 300px"></div></div></div></div>
+      <div class="col-lg-4"><div class="card"><div class="card-header"><h3 class="card-title">{{ __('Result by cause', 'dmarc') }}</h3></div>
+        <div class="card-body"><div class="dmarc-chart" data-chart="causes" style="height: 300px"></div></div></div></div>
+    </div>
+
+    {% if data.recs %}
+      <div class="card mb-3">
+        <div class="card-header"><h3 class="card-title">{{ __('Main recommendations', 'dmarc') }}</h3>
+          <a class="ms-auto" href="{{ self }}?{{ q|merge({'tab': 'recommendations'})|url_encode }}">{{ __('See all', 'dmarc') }}</a></div>
+        <div class="list-group list-group-flush">
+          {% for r in data.recs %}
+            <div class="list-group-item">{{ m.level(r.level, r.domain) }} <b>{{ r.title }}</b><div class="text-muted small">{{ r.text }}</div></div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+
+  {# ======================================================================= #}
+  {% elseif tab == 'evolution' %}
+    <div class="card mb-3"><div class="card-header"><h3 class="card-title">{{ __('Volume: pass / fail (and what the receivers did)', 'dmarc') }}</h3></div>
+      <div class="card-body"><div class="dmarc-chart" data-chart="volume" style="height: 340px"></div></div></div>
+    <div class="card mb-3"><div class="card-header"><h3 class="card-title">{{ __('DMARC compliance, aligned DKIM and aligned SPF', 'dmarc') }}</h3></div>
+      <div class="card-body"><div class="dmarc-chart" data-chart="compliance" style="height: 300px"></div></div></div>
+
+    <div class="row row-cards mb-3">
+      <div class="col-lg-6">
+        <div class="card"><div class="card-header"><h3 class="card-title">{{ __('Changes of the published policy', 'dmarc') }}</h3></div>
+          <div class="card-body small text-muted pb-0">{{ __('As the receivers see it in the reports (not a DNS query).', 'dmarc') }}</div>
+          <div class="table-responsive"><table class="table table-sm card-table">
+            <thead><tr><th>{{ __('Domain', 'dmarc') }}</th><th>{{ __('Since', 'dmarc') }}</th><th>{{ __('Policy', 'dmarc') }}</th><th>adkim / aspf</th></tr></thead>
+            <tbody>
+            {% for dom, changes in data.policies %}
+              {% for c in changes|reverse %}
+                <tr><td>{{ loop.first ? dom }}</td><td>{{ c.day|formatted_date }}</td>
+                  <td>{{ m.policy(c.p) }}{% if c.sp %} <span class="badge bg-secondary-lt">sp={{ c.sp }}</span>{% endif %}{% if c.pct is not null and c.pct < 100 %} <span class="badge bg-orange-lt">pct={{ c.pct }}</span>{% endif %}</td>
+                  <td class="small">{{ c.adkim ?: 'r' }} / {{ c.aspf ?: 'r' }}</td></tr>
+              {% endfor %}
+            {% else %}<tr><td colspan="4" class="text-muted">{{ __('No reports.', 'dmarc') }}</td></tr>{% endfor %}
+            </tbody></table></div></div>
+      </div>
+      <div class="col-lg-6">
+        <div class="card"><div class="card-header"><h3 class="card-title">{{ __('Who reports', 'dmarc') }}</h3></div>
+          <div class="card-body"><div class="dmarc-chart" data-chart="reporters" style="height: 220px"></div></div>
+          <div class="table-responsive"><table class="table table-sm card-table">
+            <thead><tr><th>{{ __('Organization', 'dmarc') }}</th><th class="text-end">{{ __('Reports', 'dmarc') }}</th><th class="text-end">{{ __('Messages', 'dmarc') }}</th><th>{{ __('Pass', 'dmarc') }}</th><th>{{ __('Last', 'dmarc') }}</th></tr></thead>
+            <tbody>{% for r in data.reporters %}
+              <tr><td>{{ r.org_name }}</td><td class="text-end">{{ m.num(r.reports) }}</td><td class="text-end">{{ m.num(r.total) }}</td>
+                <td>{{ m.pct(r.pass_pct) }}</td><td>{{ r.last_day|formatted_date }}</td></tr>
+            {% else %}<tr><td colspan="5" class="text-muted">{{ __('No data.', 'dmarc') }}</td></tr>{% endfor %}</tbody></table></div></div>
+      </div>
+    </div>
+
+  {# ======================================================================= #}
+  {% elseif tab == 'sources' %}
+    <div class="row row-cards mb-3">
+      <div class="col-lg-5"><div class="card"><div class="card-header"><h3 class="card-title">{{ __('Main senders', 'dmarc') }}</h3></div>
+        <div class="card-body"><div class="dmarc-chart" data-chart="senders" style="height: 320px"></div></div></div></div>
+      <div class="col-lg-7"><div class="card"><div class="card-header"><h3 class="card-title">{{ __('By sender', 'dmarc') }}</h3></div>
+        <div class="table-responsive" style="max-height: 380px"><table class="table table-sm card-table">
+          <thead><tr><th>{{ __('Sender', 'dmarc') }}</th><th class="text-end">IP</th><th class="text-end">{{ __('Messages', 'dmarc') }}</th><th>{{ __('Pass', 'dmarc') }}</th><th>DKIM</th><th>SPF</th><th>{{ __('Classification', 'dmarc') }}</th></tr></thead>
+          <tbody>{% for s in data.senders %}
+            <tr><td><a href="{{ self }}?{{ q|merge({'q': s.sender, 'view': 'ips'})|url_encode }}">{{ s.sender }}</a></td>
+              <td class="text-end">{{ s.ips }}</td><td class="text-end">{{ m.num(s.total) }}</td>
+              <td>{{ m.pct(s.pass_pct) }}</td><td>{{ m.pct(s.dkim_pct) }}</td><td>{{ m.pct(s.spf_pct) }}</td>
+              <td>{% for st in s.statuses %}{{ m.srcstatus(st, source_statuses) }} {% endfor %}</td></tr>
+          {% endfor %}</tbody></table></div></div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header flex-wrap gap-2">
+        <h3 class="card-title">{{ __('Sources (IP)', 'dmarc') }}</h3>
+        <form method="get" action="{{ self }}" class="d-flex flex-wrap gap-2 ms-auto">
+          {% for k, v in filters %}<input type="hidden" name="{{ k }}" value="{{ v }}">{% endfor %}
+          <input type="hidden" name="tab" value="sources">
+          <input type="search" name="q" value="{{ data.q }}" class="form-control form-control-sm" placeholder="{{ __('IP, name or sender', 'dmarc') }}" style="width: 14rem">
+          <select name="status" class="form-select form-select-sm" style="width: auto">
+            <option value="">{{ __('All classifications', 'dmarc') }}</option>
+            {% for k, l in source_statuses %}<option value="{{ k }}" {{ data.status == k ? 'selected' }}>{{ l }}</option>{% endfor %}
+          </select>
+          <label class="form-check form-check-inline mb-0 small"><input type="checkbox" name="new" value="1" class="form-check-input" {{ data.new ? 'checked' }}> {{ __('New in the period', 'dmarc') }}</label>
+          <button class="btn btn-sm btn-outline-primary" title="{{ __('Search', 'dmarc') }}"><i class="ti ti-search"></i></button>
+        </form>
+      </div>
+      <form method="post" action="{{ action_url }}">
+        {{ csrf_input }}
+        <input type="hidden" name="back" value="{{ self }}?{{ q|merge({'q': data.q, 'status': data.status >= 0 ? data.status : '', 'new': data.new ? 1 : ''})|url_encode }}">
+        <div class="table-responsive">
+          <table class="table table-sm table-vcenter card-table">
+            <thead><tr>
+              {% if can_update %}<th><input type="checkbox" class="form-check-input" title="{{ __('Select all', 'dmarc') }}" onclick="document.querySelectorAll('.dmarc-src').forEach(c => c.checked = this.checked)"></th>{% endif %}
+              <th>IP</th><th>{{ __('Reverse name', 'dmarc') }}</th><th>{{ __('Sender', 'dmarc') }}</th><th>{{ __('Domains', 'dmarc') }}</th><th class="text-end">{{ __('Messages', 'dmarc') }}</th><th>{{ __('Pass', 'dmarc') }}</th>
+              <th>DKIM</th><th>SPF</th><th>{{ __('Failure causes', 'dmarc') }}</th><th>{{ __('Seen', 'dmarc') }}</th><th>{{ __('Classification', 'dmarc') }}</th>
+            </tr></thead>
+            <tbody>
+            {% for s in data.sources %}
+              <tr>
+                {% if can_update %}<td><input type="checkbox" name="ids[]" value="{{ s.id }}" class="form-check-input dmarc-src"></td>{% endif %}
+                <td><a class="font-monospace" href="{{ self }}?{{ q|merge({'tab': 'failures', 'q': s.ip})|url_encode }}" title="{{ __('See its failures', 'dmarc') }}">{{ s.ip }}</a><div>{{ dm.abuse(s) }}</div></td>
+                <td class="small">{{ s.ptr ?: '—' }}</td>
+                <td>{{ s.sender ?: '—' }}</td>
+                <td class="small">{{ s.domains }}</td>
+                <td class="text-end">{{ m.num(s.total) }}</td>
+                <td>{{ m.bar(s.pass_pct) }}<span class="small">{{ m.pct(s.pass_pct) }}</span></td>
+                <td class="small">{{ m.pct(s.dkim_pct) }}</td>
+                <td class="small">{{ m.pct(s.spf_pct) }}</td>
+                <td class="small">{% for c in s.causes %}<div>{{ cause_labels[c] ?? c }}</div>{% endfor %}</td>
+                <td class="small">{{ s.first_seen|formatted_date }} – {{ s.last_seen|formatted_date }}</td>
+                <td>{{ m.srcstatus(s.status, source_statuses) }}{% if s.comment %}<div class="small text-muted">{{ s.comment }}</div>{% endif %}</td>
+              </tr>
+            {% else %}
+              <tr><td colspan="12" class="text-muted">{{ __('No sources with these filters.', 'dmarc') }}</td></tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% if can_update and data.sources %}
+          <div class="card-footer d-flex flex-wrap gap-2 align-items-center">
+            <span class="small">{{ __('With the selected ones:', 'dmarc') }}</span>
+            <select name="status" class="form-select form-select-sm" style="width: auto">
+              {% for k, l in source_statuses %}<option value="{{ k }}">{{ l }}</option>{% endfor %}
+            </select>
+            <input type="text" name="comment" maxlength="1000" class="form-control form-control-sm" style="width: 20rem" placeholder="{{ __('Comment (optional: provider, service…)', 'dmarc') }}">
+            <button type="submit" name="action" value="classify" class="btn btn-sm btn-primary"><i class="ti ti-tag"></i> {{ __('Classify', 'dmarc') }}</button>
+          </div>
+        {% endif %}
+      </form>
+    </div>
+    <p class="small text-muted mt-2">
+      <b>{{ source_statuses[1] }}</b>: {{ __('one of our servers or providers (if it fails, fix its SPF or DKIM).', 'dmarc') }}
+      <b>{{ source_statuses[3] }}</b>: {{ __('known forwardings or mailing lists (their failures do not alert).', 'dmarc') }}
+      <b>{{ source_statuses[2] }}</b>: {{ __('spoofing; it alerts every time it shows up again.', 'dmarc') }}
+      <b>{{ source_statuses[0] }}</b>: {{ __('it alerts once if it fails with enough messages.', 'dmarc') }}
+    </p>
+
+  {# ======================================================================= #}
+  {% elseif tab == 'failures' %}
+    <div class="row row-cards mb-3">
+      {% for c in data.causes %}
+        {% if c.cause >= 10 %}
+          <div class="col-md-6 col-xl-4">
+            <a class="card card-sm card-link {{ data.cause == c.cause ? 'border-primary' }}" href="{{ self }}?{{ q|merge({'cause': data.cause == c.cause ? '' : c.cause, 'q': data.ip})|url_encode }}">
+              <div class="card-body">
+                <div class="d-flex justify-content-between"><b>{{ cause_labels[c.cause] ?? c.cause }}</b><span class="h3 mb-0">{{ m.num(c.total) }}</span></div>
+                <div class="small text-muted">{{ _n('%d source', '%d sources', c.sources, 'dmarc')|format(c.sources) }}</div>
+              </div>
+            </a>
+          </div>
+        {% endif %}
+      {% else %}
+        <div class="col-12 text-muted">{{ __('No data in the period.', 'dmarc') }}</div>
+      {% endfor %}
+    </div>
+
+    <div class="card mb-3">
+      <div class="card-header"><h3 class="card-title">{{ __('Messages failing DMARC', 'dmarc') }}{% if data.cause %}: {{ cause_labels[data.cause] }}{% endif %}{% if data.ip %} — {{ data.ip }}{% endif %}</h3>
+        {% if data.ip %}<a class="ms-auto" href="{{ self }}?{{ q|merge({'q': ''})|url_encode }}">{{ __('All sources', 'dmarc') }}</a>{% endif %}</div>
+      <div class="table-responsive">
+        <table class="table table-sm card-table">
+          <thead><tr><th>{{ __('Domain', 'dmarc') }}</th><th>{{ __('Source', 'dmarc') }}</th><th>{{ __('Classification', 'dmarc') }}</th><th class="text-end">{{ __('Messages', 'dmarc') }}</th><th>{{ __('Cause and diagnosis', 'dmarc') }}</th><th>{{ __('From / envelope', 'dmarc') }}</th><th>DKIM</th><th>SPF</th><th>{{ __('Receiver applied', 'dmarc') }}</th><th>{{ __('Seen', 'dmarc') }}</th></tr></thead>
+          <tbody>
+          {% for f in data.failures %}
+            <tr>
+              <td>{{ f.domain }}</td>
+              <td><span class="font-monospace">{{ f.ip }}</span><div class="small text-muted">{{ f.sender ?: f.ptr }}</div><div>{{ dm.abuse(f) }}</div></td>
+              <td>{{ m.srcstatus(f.status, source_statuses) }}</td>
+              <td class="text-end">{{ m.num(f.total) }}</td>
+              <td style="min-width: 18rem; max-width: 32rem; white-space: normal"><b>{{ cause_labels[f.cause] ?? f.cause }}</b><div class="small text-muted">{{ f.explain }}</div>
+                {% if f.reasons %}<div class="small">{{ __('Reason given: %s', 'dmarc')|format(f.reasons) }}</div>{% endif %}</td>
+              <td class="small" style="white-space: normal; min-width: 9rem; max-width: 16rem">{{ f.header_from }}{% if f.envelope_from %}<div class="text-muted">{{ __('envelope: %s', 'dmarc')|format(f.envelope_from) }}</div>{% endif %}</td>
+              <td class="small" style="white-space: normal; min-width: 10rem; max-width: 16rem; overflow-wrap: anywhere">{{ f.dkim|replace({' | ': ', '}) ?: '—' }}</td>
+              <td class="small" style="white-space: normal; min-width: 9rem; max-width: 14rem; overflow-wrap: anywhere">{{ f.spf|replace({' | ': ', '}) ?: '—' }}</td>
+              <td class="small">{{ f.dispositions }}</td>
+              <td class="small">{{ f.first_day|formatted_date }} – {{ f.last_day|formatted_date }}</td>
+            </tr>
+          {% else %}
+            <tr><td colspan="10" class="text-muted">{{ __('No message fails in the period.', 'dmarc') }} 🎉</td></tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><h3 class="card-title">{{ __('DKIM signatures seen (domain and selector)', 'dmarc') }}</h3></div>
+      <div class="table-responsive"><table class="table table-sm card-table">
+        <thead><tr><th>{{ __('Report domain', 'dmarc') }}</th><th>{{ __('Signing domain (d=)', 'dmarc') }}</th><th>{{ __('Selector (s=)', 'dmarc') }}</th><th class="text-end">{{ __('Messages', 'dmarc') }}</th><th>{{ __('Valid', 'dmarc') }}</th><th>{{ __('Last seen', 'dmarc') }}</th></tr></thead>
+        <tbody>{% for s in data.selectors %}
+          {% set pp = s.total > 0 ? 100 * s.pass / s.total : 0 %}
+          <tr><td>{{ s.domain }}</td><td>{{ s.d }}</td><td class="font-monospace">{{ s.selector ?: '—' }}</td><td class="text-end">{{ m.num(s.total) }}</td>
+            <td>{{ m.bar(pp) }}<span class="small">{{ m.pct(pp) }}</span></td><td>{{ s.last_day|formatted_date }}</td></tr>
+        {% else %}<tr><td colspan="6" class="text-muted">{{ __('No DKIM signatures in the period.', 'dmarc') }}</td></tr>{% endfor %}</tbody></table></div>
+    </div>
+
+  {# ======================================================================= #}
+  {% elseif tab == 'recommendations' %}
+    <div class="card mb-3">
+      <div class="list-group list-group-flush">
+        {% for r in data.recs %}
+          <div class="list-group-item">{{ m.level(r.level, r.domain) }} <b>{{ r.title }}</b><div class="text-muted">{{ r.text }}</div></div>
+        {% else %}
+          <div class="list-group-item text-muted">{{ __('Nothing to recommend in the period.', 'dmarc') }}</div>
+        {% endfor %}
+      </div>
+    </div>
+    <p class="small text-muted">{{ __('Fixed rules over the data of the period. "Legitimate mail" is everything except the mail of sources classified as unauthorized or forwarders, so classify the sources before tightening the policy.', 'dmarc') }}</p>
+
+  {# ======================================================================= #}
+  {% elseif tab == 'reports' %}
+    <div class="card">
+      <div class="card-header"><h3 class="card-title">{{ _n('%s report', '%s reports', data.count, 'dmarc')|format(data.count|formatted_integer) }}</h3></div>
+      <div class="table-responsive"><table class="table table-sm table-hover card-table">
+        <thead><tr><th>{{ __('Day', 'dmarc') }}</th><th>{{ __('Reported by', 'dmarc') }}</th><th>{{ __('Domain', 'dmarc') }}</th><th>{{ __('Policy', 'dmarc') }}</th><th class="text-end">{{ __('Rows', 'dmarc') }}</th><th class="text-end">{{ __('Messages', 'dmarc') }}</th><th>{{ __('Pass', 'dmarc') }}</th><th>{{ __('Report ID', 'dmarc') }}</th><th></th></tr></thead>
+        <tbody>
+        {% for r in data.rows %}
+          {% set pp = r.total > 0 ? 100 * r.pass / r.total : 0 %}
+          <tr>
+            <td>{{ r.day|formatted_date }}</td><td>{{ r.org_name }}</td><td>{{ r.domain }}</td>
+            <td>{{ m.policy(r.p) }}{% if r.pct is not null and r.pct < 100 %} <span class="badge bg-orange-lt">pct={{ r.pct }}</span>{% endif %}</td>
+            <td class="text-end">{{ r.records }}</td><td class="text-end">{{ m.num(r.total) }}</td><td>{{ m.pct(pp) }}</td>
+            <td class="small font-monospace text-truncate" style="max-width: 16rem">{{ r.report_id }}</td>
+            <td><a href="{{ report_url }}?id={{ r.id }}" class="btn btn-sm btn-ghost-primary" title="{{ __('View', 'dmarc') }}"><i class="ti ti-eye"></i></a>
+              {% if r.raw_file %}<a href="{{ report_url }}?id={{ r.id }}&raw=1" class="btn btn-sm btn-ghost-secondary" title="{{ __('Original XML', 'dmarc') }}"><i class="ti ti-file-code"></i></a>{% endif %}</td>
+          </tr>
+        {% else %}<tr><td colspan="9" class="text-muted">{{ __('No reports in the period.', 'dmarc') }}</td></tr>{% endfor %}
+        </tbody></table></div>
+      {% if data.count > 100 %}
+        <div class="card-footer d-flex gap-2">
+          {% if data.page > 0 %}<a class="btn btn-sm btn-outline-secondary" href="{{ self }}?{{ q|merge({'page': data.page - 1})|url_encode }}">‹ {{ __('Previous', 'dmarc') }}</a>{% endif %}
+          <span class="small align-self-center">{{ __('Page %1$d of %2$d', 'dmarc')|format(data.page + 1, ((data.count + 99) / 100)|round(0, 'floor')) }}</span>
+          {% if (data.page + 1) * 100 < data.count %}<a class="btn btn-sm btn-outline-secondary" href="{{ self }}?{{ q|merge({'page': data.page + 1})|url_encode }}">{{ __('Next', 'dmarc') }} ›</a>{% endif %}
+        </div>
+      {% endif %}
+    </div>
+
+  {# ======================================================================= #}
+  {% elseif tab == 'alerts' %}
+    {% if not data.notify %}
+      <div class="alert alert-warning">{{ __('Mail notifications are turned off in the plugin configuration: the alerts are recorded here, but not sent.', 'dmarc') }}
+        {{ __('Recipients and texts: Setup > Notifications (type "DMARC alert").', 'dmarc') }}</div>
+    {% endif %}
+    <div class="card">
+      <div class="card-header"><h3 class="card-title">{{ data.closed ? __('All alerts', 'dmarc') : __('Open alerts', 'dmarc') }}</h3>
+        <a class="ms-auto" href="{{ self }}?{{ q|merge({'closed': data.closed ? '' : 1})|url_encode }}">{{ data.closed ? __('Show only the open ones', 'dmarc') : __('Show the closed ones too', 'dmarc') }}</a></div>
+      <div class="table-responsive"><table class="table table-sm card-table">
+        <thead><tr><th>{{ __('Date', 'dmarc') }}</th><th>{{ __('Event', 'dmarc') }}</th><th>{{ __('Domain', 'dmarc') }}</th><th>{{ __('Message', 'dmarc') }}</th><th class="text-end">{{ __('Times', 'dmarc') }}</th><th>{{ __('Notified', 'dmarc') }}</th><th>{{ __('Status', 'dmarc') }}</th><th></th></tr></thead>
+        <tbody>
+        {% for a in data.alerts %}
+          <tr>
+            <td class="small">{{ a.date_creation|formatted_datetime }}</td>
+            <td>{{ a.event_label }}</td>
+            <td>{{ a.domain }}</td>
+            <td style="white-space: normal; max-width: 40rem">{{ a.message }}</td>
+            <td class="text-end">{{ a.count }}</td>
+            <td class="small">{{ a.date_notified ? a.date_notified|formatted_datetime : '—' }}</td>
+            <td>{% if a.status == 1 %}<span class="badge bg-red-lt">{{ __('Open', 'dmarc') }}</span>{% else %}<span class="badge bg-secondary-lt">{{ __('Closed', 'dmarc') }}</span>{% endif %}</td>
+            <td>{% if can_update and a.status == 1 %}
+              <form method="post" action="{{ action_url }}" class="d-inline">{{ csrf_input }}
+                <input type="hidden" name="id" value="{{ a.id }}"><input type="hidden" name="back" value="{{ self }}?{{ q|url_encode }}">
+                <button type="submit" name="action" value="close_alert" class="btn btn-sm btn-ghost-secondary" title="{{ __('Close', 'dmarc') }}"><i class="ti ti-check"></i></button>
+              </form>{% endif %}</td>
+          </tr>
+        {% else %}<tr><td colspan="8" class="text-muted">{{ __('No alerts.', 'dmarc') }}</td></tr>{% endfor %}
+        </tbody></table></div>
+    </div>
+
+  {# ======================================================================= #}
+  {% elseif tab == 'collection' %}
+    {% set w = data.worker %}
+    {% set steps = {'import': __('importing files', 'dmarc'), 'collect': __('collecting from the mailbox', 'dmarc'), 'reprocess': __('reading mails again', 'dmarc')} %}
+    {% if w.running or w.state is defined %}
+      <div class="alert alert-{{ w.running ? 'info' : (w.state == 'done' ? 'success' : (w.state in ['error', 'failed_start'] ? 'danger' : 'secondary')) }} mb-3" id="dmarc-worker" data-running="{{ w.running ? 1 : 0 }}">
+        {% if w.running %}
+          <div class="d-flex align-items-center gap-2">
+            <span class="spinner-border spinner-border-sm"></span>
+            <b>{{ __('Background job running', 'dmarc') }}</b>{% if w.step is defined and steps[w.step] is defined %}: {{ steps[w.step] }}{% endif %}
+            {% if w.total is defined and w.total > 0 %} — {{ __('%1$d of %2$d', 'dmarc')|format(w.done, w.total) }}{% elseif w.done is defined and w.done > 0 %} — {{ w.done }}{% endif %}
+            {% if w.reports is defined %} · {{ _n('%d new report', '%d new reports', w.reports, 'dmarc')|format(w.reports) }}{% endif %}
+            {% if w.started is defined %} · {{ __('since %s', 'dmarc')|format(w.started|date('H:i')) }}{% endif %}
+          </div>
+          {% if w.total is defined and w.total > 0 %}<div class="progress progress-sm mt-2"><div class="progress-bar" style="width: {{ (100 * w.done / w.total)|round }}%"></div></div>{% endif %}
+          <div class="small text-muted mt-1">{{ __('GLPI keeps working normally; this page refreshes itself.', 'dmarc') }}</div>
+        {% elseif w.state == 'failed_start' %}
+          <b>{{ __('The background job did not start.', 'dmarc') }}</b>
+          {% if w.log %}<pre class="small mb-0 mt-1" style="white-space: pre-wrap">{{ w.log }}</pre>{% endif %}
+        {% else %}
+          <b>{{ __('Last background job', 'dmarc') }}</b>{% if w.finished is defined %} ({{ w.finished|date('Y-m-d H:i:s')|formatted_datetime }}){% endif %}: {{ w.summary ?? '' }}
+          {% if w.failure is defined %}<div class="text-red">{{ __('Error', 'dmarc') }}: {{ w.failure }}</div>{% endif %}
+        {% endif %}
+      </div>
+    {% endif %}
+    <div class="row row-cards mb-3">
+      <div class="col-lg-6">
+        <div class="card h-100"><div class="card-header"><h3 class="card-title">{{ __('Mailbox', 'dmarc') }}</h3></div>
+          <div class="card-body">
+            {% if not data.configured %}
+              <div class="alert alert-warning mb-2">{{ __('The mailbox is not configured.', 'dmarc') }}{% if config_url %} <a href="{{ config_url }}">{{ __('Configure it', 'dmarc') }}</a>.{% endif %}</div>
+            {% endif %}
+            <dl class="row mb-0 small">
+              <dt class="col-5">{{ __('Server', 'dmarc') }}</dt><dd class="col-7">{{ data.mailbox.host }}:{{ data.mailbox.port }}</dd>
+              <dt class="col-5">{{ __('Account', 'dmarc') }}</dt><dd class="col-7">{{ data.mailbox.username ?: '—' }} ({{ data.mailbox.auth == 'oauth_google' ? __('Google OAuth', 'dmarc') : __('user and password', 'dmarc') }})</dd>
+              <dt class="col-5">{{ __('Folder', 'dmarc') }}</dt><dd class="col-7">{{ data.mailbox.folder }}</dd>
+              <dt class="col-5">{{ __('Mode', 'dmarc') }}</dt><dd class="col-7">{% if data.mailbox.mode == 'write' %}<span class="badge bg-orange-lt">{{ __('read-write', 'dmarc') }}</span>
+                {{ {'seen': __('marks the processed mails as read', 'dmarc'), 'move': __('moves the processed mails to "%s"', 'dmarc')|format(data.mailbox.move_folder), 'delete': __('deletes the processed mails', 'dmarc')}[data.mailbox.post_action] }}
+                {% else %}<span class="badge bg-green-lt">{{ __('read-only', 'dmarc') }}</span> {{ __('nothing is changed in the mailbox', 'dmarc') }}{% endif %}</dd>
+              <dt class="col-5">{{ __('Last collection', 'dmarc') }}</dt><dd class="col-7">{{ data.state.last_run ? data.state.last_run|formatted_datetime : '—' }}</dd>
+              <dt class="col-5">{{ __('Last successful', 'dmarc') }}</dt><dd class="col-7">{{ data.state.last_ok ? data.state.last_ok|formatted_datetime : '—' }}</dd>
+              {% if data.state.last_error %}<dt class="col-5 text-red">{{ __('Last error', 'dmarc') }}</dt><dd class="col-7 text-red">{{ data.state.last_error }}{% if data.state.errors %} ({{ _n('%d in a row', '%d in a row', data.state.errors, 'dmarc')|format(data.state.errors) }}){% endif %}</dd>{% endif %}
+              <dt class="col-5">{{ __('Progress', 'dmarc') }}</dt><dd class="col-7">UID {{ data.state.last_uid }} (UIDVALIDITY {{ data.state.uidvalidity }})</dd>
+            </dl>
+          </div>
+          {% if can_update and data.configured %}
+            <div class="card-footer">
+              <form method="post" action="{{ action_url }}" class="d-inline">{{ csrf_input }}
+                <input type="hidden" name="back" value="{{ self }}?{{ q|url_encode }}">
+                <button type="submit" name="action" value="collect" class="btn btn-primary" {{ w.running ? 'disabled' }}><i class="ti ti-mail-down"></i> {{ __('Collect now', 'dmarc') }}</button>
+              </form>
+              <span class="small text-muted ms-2">{{ __('It runs in the background: it collects everything pending (up to about 50 minutes each time) without blocking GLPI.', 'dmarc') }}</span>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="card h-100"><div class="card-header"><h3 class="card-title">{{ __('Import files', 'dmarc') }}</h3></div>
+          <div class="card-body">
+            {% if can_update %}
+              <form method="post" action="{{ action_url }}" enctype="multipart/form-data">{{ csrf_input }}
+                <input type="hidden" name="back" value="{{ self }}?{{ q|url_encode }}">
+                <input type="file" name="files[]" multiple accept=".eml,.zip,.gz,.xml,message/rfc822,application/zip,application/gzip,text/xml" class="form-control mb-2">
+                <button type="submit" name="action" value="import" class="btn btn-outline-primary"><i class="ti ti-upload"></i> {{ __('Import', 'dmarc') }}</button>
+              </form>
+              <p class="small text-muted mt-2 mb-0">{{ __('Saved mails (.eml) or single reports (.zip, .gz, .xml). Reports already imported are not duplicated.', 'dmarc') }}
+                {{ __('For many files, from the console:', 'dmarc') }} <code>php bin/console plugins:dmarc:import /path</code></p>
+            {% else %}
+              <p class="text-muted">{{ __('The DMARC "Update" right is needed.', 'dmarc') }}</p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header flex-wrap gap-2"><h3 class="card-title">{{ __('Processed mails (last 200)', 'dmarc') }}</h3>
+        <div class="ms-auto d-flex flex-wrap gap-1">
+          <a class="btn btn-sm {{ data.mstatus < 0 ? 'btn-primary' : 'btn-outline-secondary' }}" href="{{ self }}?{{ q|merge({'mstatus': ''})|url_encode }}">{{ __('All', 'dmarc') }}</a>
+          {% for k, l in message_statuses %}
+            <a class="btn btn-sm {{ data.mstatus == k ? 'btn-primary' : 'btn-outline-secondary' }}" href="{{ self }}?{{ q|merge({'mstatus': k})|url_encode }}">{{ l }} ({{ data.counts[k] ?? 0 }})</a>
+          {% endfor %}
+        </div>
+      </div>
+      <form method="post" action="{{ action_url }}">{{ csrf_input }}
+        <input type="hidden" name="back" value="{{ self }}?{{ q|merge({'mstatus': data.mstatus >= 0 ? data.mstatus : ''})|url_encode }}">
+        <div class="table-responsive"><table class="table table-sm card-table">
+          <thead><tr>{% if can_update %}<th></th>{% endif %}<th>{{ __('Processed', 'dmarc') }}</th><th>{{ __('Origin', 'dmarc') }}</th><th>{{ __('Mail date', 'dmarc') }}</th><th>{{ __('Sender', 'dmarc') }}</th><th>{{ __('Subject / file', 'dmarc') }}</th><th class="text-end">{{ __('Reports', 'dmarc') }}</th><th>{{ __('Status', 'dmarc') }}</th><th>{{ __('Mailbox action', 'dmarc') }}</th></tr></thead>
+          <tbody>
+          {% for msg in data.messages %}
+            <tr>
+              {% if can_update %}<td>{% if msg.source == 'imap' and msg.status in [4, 5] %}<input type="checkbox" name="ids[]" value="{{ msg.id }}" class="form-check-input">{% endif %}</td>{% endif %}
+              <td class="small">{{ msg.date_creation|formatted_datetime }}</td>
+              <td class="small">{{ msg.source }}{% if msg.uid %} #{{ msg.uid }}{% endif %}</td>
+              <td class="small">{{ msg.date_mail ? msg.date_mail|formatted_datetime : '—' }}</td>
+              <td class="small text-truncate" style="max-width: 14rem">{{ msg.sender }}</td>
+              <td class="small text-truncate" style="max-width: 24rem">{{ msg.subject ?: msg.filename }}</td>
+              <td class="text-end">{{ msg.reports }}</td>
+              <td>{% set colors = {1: 'green', 2: 'secondary', 3: 'yellow', 4: 'red', 5: 'orange'} %}
+                <span class="badge bg-{{ colors[msg.status] ?? 'secondary' }}-lt">{{ message_statuses[msg.status] ?? msg.status }}</span>
+                {% if msg.error %}<div class="small text-red" style="white-space: pre-wrap; max-width: 28rem">{{ msg.error }}</div>{% endif %}</td>
+              <td class="small">{{ msg.post_action ?: '—' }}</td>
+            </tr>
+          {% else %}<tr><td colspan="9" class="text-muted">{{ __('No mail processed.', 'dmarc') }}</td></tr>{% endfor %}
+          </tbody></table></div>
+        {% if can_update %}
+          <div class="card-footer"><button type="submit" name="action" value="reprocess" class="btn btn-sm btn-outline-primary"><i class="ti ti-refresh"></i> {{ __('Reprocess the selected ones', 'dmarc') }}</button>
+            <span class="small text-muted ms-2">{{ __('Reads them again from the mailbox (with errors or skipped).', 'dmarc') }}</span></div>
+        {% endif %}
+      </form>
+    </div>
+  {% endif %}
+</div>
+
+<script type="application/json" id="dmarc-charts">{{ charts|json_encode(json_safe)|raw }}</script>
+<script type="application/json" id="dmarc-i18n">{{ {
+  'pass': __('Pass', 'dmarc'),
+  'fail': __('Fail', 'dmarc'),
+  'fail_none': __('Fail (delivered)', 'dmarc'),
+  'fail_quarantine': __('Fail (quarantine)', 'dmarc'),
+  'fail_reject': __('Fail (rejected)', 'dmarc'),
+  'pass_dmarc': __('Pass DMARC', 'dmarc'),
+  'dkim_aligned': __('DKIM aligned', 'dmarc'),
+  'spf_aligned': __('SPF aligned', 'dmarc'),
+  'messages': __('Messages', 'dmarc'),
+  'no_data': __('No data in the period.', 'dmarc'),
+  'select_domain': __('Select at least one domain.', 'dmarc')
+}|json_encode(json_safe)|raw }}</script>
+<script src="{{ root }}/plugins/dmarc/js/dmarc.js?v={{ asset_ver }}"></script>

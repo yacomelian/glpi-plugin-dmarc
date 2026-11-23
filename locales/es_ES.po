@@ -1,0 +1,2220 @@
+# DMARC plugin for GLPI
+# Copyright (C) 2026 Yaco Melian
+# This file is distributed under the same license as the DMARC package (GPLv2+).
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: DMARC\n"
+"Report-Msgid-Bugs-To: https://github.com/__REPO__/issues\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: es_ES\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: front/action.php:64
+msgid "Select some sources and choose a classification."
+msgstr "Marque alguna fuente y elija una clasificación."
+
+#: front/action.php:88
+#, php-format
+msgid "%1$d source(s) classified as \"%2$s\"."
+msgstr "%1$d fuente(s) clasificada(s) como «%2$s»."
+
+#: front/action.php:111
+msgid "None of the selected mails can be read again from the mailbox (the folder changed or nothing is selected)."
+msgstr "Ningún correo marcado se puede volver a leer del buzón (la carpeta ha cambiado o no hay marcados)."
+
+#: front/action.php:118
+msgid "A collection is already running in the background. Its progress is shown in the Collection tab."
+msgstr "Ya hay una recogida en marcha en segundo plano. Su avance se ve en la pestaña Recogida."
+
+#: front/action.php:123
+msgid "Collection started in the background. You can keep using GLPI; the progress is shown in the Collection tab."
+msgstr "Recogida iniciada en segundo plano. Puede seguir usando GLPI; el avance se ve en la pestaña Recogida."
+
+#: front/action.php:125
+msgid "This server cannot start background processes: the next \"collect\" automatic action will do the collection."
+msgstr "Este servidor no permite lanzar procesos en segundo plano: la recogida la hará la próxima acción automática «collect»."
+
+#: front/action.php:132
+msgid "No file was uploaded."
+msgstr "No se ha subido ningún fichero."
+
+#: front/action.php:154
+msgid "No file could be saved."
+msgstr "No se ha podido guardar ningún fichero."
+
+#: front/action.php:159
+#, php-format
+msgid "%d file(s) queued: the job already running will import them when it ends."
+msgstr "%d fichero(s) en cola: los importará el trabajo que ya está en marcha al terminar."
+
+#: front/action.php:161
+#, php-format
+msgid "%d file(s) received: they are imported in the background. The progress is shown in the Collection tab."
+msgstr "%d fichero(s) recibidos: se importan en segundo plano. El avance se ve en la pestaña Recogida."
+
+#: front/action.php:163
+#, php-format
+msgid "%d file(s) queued: the next \"collect\" automatic action will import them."
+msgstr "%d fichero(s) en cola: los importará la próxima acción automática «collect»."
+
+#: front/action.php:168
+msgid "Unknown action."
+msgstr "Acción desconocida."
+
+#: front/config.form.php:72
+msgid "The start date is not valid; it was not changed."
+msgstr "La fecha de inicio no es válida; no se ha cambiado."
+
+#: front/config.form.php:78
+msgid "The destination folder cannot be the reports folder: read-only mode is kept."
+msgstr "La carpeta de destino no puede ser la misma que la de los informes: se deja en solo lectura."
+
+#: front/config.form.php:119
+msgid "The OAuth client ID should end with \".apps.googleusercontent.com\"; it was saved as given."
+msgstr "El ID de cliente OAuth debería terminar en «.apps.googleusercontent.com»; se ha guardado tal cual."
+
+#: front/config.form.php:139
+msgid "The mailbox account changed: the previous Google connection was discarded. Press \"Connect with Google\" again."
+msgstr "Ha cambiado la cuenta del buzón: la conexión con Google anterior se ha descartado. Vuelva a pulsar «Conectar con Google»."
+
+#: front/config.form.php:144
+msgid "Disconnected from Google. To remove the permission in Google too: myaccount.google.com › Security › Third-party connections."
+msgstr "Desconectado de Google. Para quitar también el permiso en Google: myaccount.google.com › Seguridad › Conexiones con terceros."
+
+#: front/config.form.php:163
+msgid "Configuration saved."
+msgstr "Configuración guardada."
+
+#: front/oauth.callback.php:57
+msgid "Save the OAuth client ID and secret first."
+msgstr "Guarde antes el ID y el secreto del cliente OAuth."
+
+#: front/oauth.callback.php:74
+msgid "The authorization was cancelled in Google."
+msgstr "Se ha cancelado la autorización en Google."
+
+#: front/oauth.callback.php:75
+#, php-format
+msgid "Google returned an error: %s"
+msgstr "Google ha devuelto un error: %s"
+
+#: front/oauth.callback.php:85
+msgid "The answer from Google does not belong to a connection started here. Press \"Connect with Google\" again."
+msgstr "La respuesta de Google no corresponde a una conexión iniciada desde aquí. Pulse de nuevo «Conectar con Google»."
+
+#: front/oauth.callback.php:96
+msgid "Google did not say which account was authorized."
+msgstr "Google no ha indicado qué cuenta ha autorizado."
+
+#: front/oauth.callback.php:100
+#, php-format
+msgid "You authorized the account %1$s, but the configured mailbox is %2$s. Nothing was saved: connect again with the mailbox account."
+msgstr "Ha autorizado la cuenta %1$s, pero el buzón configurado es %2$s. No se ha guardado nada: vuelva a conectar con la cuenta del buzón."
+
+#: front/oauth.callback.php:110
+#, php-format
+msgid "Connected with Google as %s. You can now test the connection."
+msgstr "Conectado con Google como %s. Ya puede probar la conexión."
+
+#: setup.php:109
+#, php-format
+msgid "Missing PHP extensions: %s"
+msgstr "Faltan extensiones de PHP: %s"
+
+#: src/AbuseIpdb.php:101 src/Cron.php:138
+msgid "AbuseIPDB is disabled or has no API key"
+msgstr "AbuseIPDB desactivado o sin clave"
+
+#: src/AbuseIpdb.php:141
+#, php-format
+msgid "daily limit of %d queries reached"
+msgstr "límite diario de %d consultas alcanzado"
+
+#: src/AbuseIpdb.php:145
+msgid "maximum run time reached"
+msgstr "tiempo máximo de la ejecución"
+
+#: src/AbuseIpdb.php:164
+msgid "AbuseIPDB: too many requests, it will go on later"
+msgstr "AbuseIPDB: demasiadas consultas, se sigue más tarde"
+
+#: src/AbuseIpdb.php:175
+#, php-format
+msgid "repeated errors: %s"
+msgstr "errores seguidos: %s"
+
+#: src/AbuseIpdb.php:222
+#, php-format
+msgid "Cannot connect to AbuseIPDB (%s)"
+msgstr "No se puede conectar con AbuseIPDB (%s)"
+
+#: src/AbuseIpdb.php:231
+#, php-format
+msgid "AbuseIPDB answered HTTP %1$d%2$s"
+msgstr "AbuseIPDB respondió HTTP %1$d%2$s"
+
+#: src/Advisor.php:61
+msgid "No reports arriving"
+msgstr "No llegan informes"
+
+#: src/Advisor.php:62
+#, php-format
+msgid "The last report is %1$d days old. Check that the _dmarc.%2$s record is still published with rua=, that the mails reach the folder and that the collection works."
+msgstr "El último informe es de hace %1$d días. Compruebe que el registro _dmarc.%2$s sigue publicado con rua=, que los correos llegan a la carpeta y que la recogida funciona."
+
+#: src/Advisor.php:69
+msgid "Authorized sources failing"
+msgstr "Fuentes autorizadas que no cumplen"
+
+#: src/Advisor.php:70
+#, php-format
+msgid "%1$s messages from %2$d authorized source(s) fail DMARC. Look at the Failures tab: usually DKIM with our domain is missing at that provider, or its IP in the SPF."
+msgstr "%1$s mensajes de %2$d fuente(s) autorizada(s) no cumplen DMARC. Revise la pestaña Fallos: normalmente falta DKIM con nuestro dominio en ese proveedor o su IP en el SPF."
+
+#: src/Advisor.php:77
+msgid "Unclassified sources failing"
+msgstr "Fuentes sin clasificar que fallan"
+
+#: src/Advisor.php:78
+#, php-format
+msgid "%1$d unclassified source(s) sent %2$s messages that fail. Classify them in Sending sources: authorized (and fix their SPF/DKIM), forwarders or unauthorized."
+msgstr "%1$d fuente(s) sin clasificar enviaron %2$s mensajes que no cumplen. Clasifíquelas en Fuentes de envío: autorizadas (y corrija su SPF/DKIM), reenviadores o no autorizadas."
+
+#: src/Advisor.php:86
+msgid "Ready to move to p=quarantine"
+msgstr "Listo para subir a p=quarantine"
+
+#: src/Advisor.php:87
+#, php-format
+msgid "%1$d days with p=none and %2$s of the legitimate mail passes DMARC. You can publish p=quarantine (with pct=25 at first, if you like) so that what fails goes to spam."
+msgstr "Lleva %1$d días con p=none y el %2$s del correo legítimo cumple DMARC. Puede publicar p=quarantine (si quiere, con pct=25 al principio) para que lo que no cumpla vaya a spam."
+
+#: src/Advisor.php:92
+msgid "Policy in monitoring mode"
+msgstr "Política en modo observación"
+
+#: src/Advisor.php:93
+#, php-format
+msgid "With p=none receivers do not stop the mails that spoof the domain. Goal: legitimate mail passing at least %1$s and no unclassified sources left; now %2$s passes."
+msgstr "Con p=none los receptores no frenan los correos que suplantan el dominio. Objetivo: que el correo legítimo cumpla al menos el %1$s y no queden fuentes sin clasificar; ahora cumple el %2$s."
+
+#: src/Advisor.php:99
+msgid "Ready to move to p=reject"
+msgstr "Listo para subir a p=reject"
+
+#: src/Advisor.php:100
+#, php-format
+msgid "%1$d days with p=quarantine and %2$s of the legitimate mail passes. With p=reject the mails that spoof the domain are rejected."
+msgstr "Lleva %1$d días con p=quarantine y el %2$s del correo legítimo cumple. Con p=reject los correos que suplantan el dominio se rechazan."
+
+#: src/Advisor.php:107
+msgid "The policy does not apply to all mail"
+msgstr "La política no se aplica a todo el correo"
+
+#: src/Advisor.php:108
+#, php-format
+msgid "pct=%1$d: the p=%2$s policy only applies to that percentage of the failing messages. Raise it to 100 when legitimate sources no longer fail."
+msgstr "pct=%1$d: la política p=%2$s solo se aplica a ese porcentaje de los mensajes que no cumplen. Súbalo a 100 cuando no haya fallos de fuentes legítimas."
+
+#: src/Advisor.php:115
+msgid "Unprotected subdomains"
+msgstr "Subdominios sin protección"
+
+#: src/Advisor.php:116
+#, php-format
+msgid "sp=none: the subdomains of %1$s can be spoofed although the domain has p=%2$s. Publish sp=quarantine or sp=reject (or remove sp so that they inherit p)."
+msgstr "sp=none: los subdominios de %1$s pueden suplantarse aunque el dominio tenga p=%2$s. Publique sp=quarantine o sp=reject (o quite sp para que hereden p)."
+
+#: src/Advisor.php:123
+msgid "Policy goal not reached"
+msgstr "Objetivo de política sin alcanzar"
+
+#: src/Advisor.php:124
+#, php-format
+msgid "The goal is p=%1$s and p=%2$s is published."
+msgstr "El objetivo marcado es p=%1$s y se publica p=%2$s."
+
+#: src/Alert.php:56
+msgid "DMARC alert"
+msgid_plural "DMARC alerts"
+msgstr[0] "Aviso DMARC"
+msgstr[1] "Avisos DMARC"
+
+#: src/Alert.php:103
+msgid "Unauthorized or unknown source"
+msgstr "Fuente no autorizada o desconocida"
+
+#: src/Alert.php:104
+msgid "Authorized source failing"
+msgstr "Fuente autorizada que falla"
+
+#: src/Alert.php:105
+msgid "Domain without reports"
+msgstr "Dominio sin informes"
+
+#: src/Alert.php:106
+msgid "Mailbox collection error"
+msgstr "Error en la recogida del buzón"
+
+#: src/Alert.php:107
+msgid "Periodic summary"
+msgstr "Resumen periódico"
+
+#: src/Collector.php:82
+msgid "The mailbox server or user is missing in the configuration"
+msgstr "Falta el servidor o el usuario del buzón en la configuración"
+
+#: src/Collector.php:157
+msgid "A collection is already running"
+msgstr "Ya hay una recogida en marcha"
+
+#: src/Collector.php:179
+msgid "The destination folder to move to is not valid"
+msgstr "La carpeta de destino para mover no es válida"
+
+#: src/Collector.php:230
+#, php-format
+msgid "Message of %.1f MB: larger than the configured maximum"
+msgstr "Mensaje de %.1f MB: supera el máximo configurado"
+
+#: src/Collector.php:297
+msgid "The folder changed on the server during the collection (different UIDVALIDITY); it will go on in the next run"
+msgstr "La carpeta ha cambiado en el servidor durante la recogida (UIDVALIDITY distinto); se seguirá en la próxima"
+
+#: src/Collector.php:335
+#, php-format
+msgid "The collection of DMARC reports failed %1$d times in a row. Last error: %2$s"
+msgstr "La recogida de informes DMARC ha fallado %1$d veces seguidas. Último error: %2$s"
+
+#: src/Command/CollectCommand.php:162
+#, php-format
+msgid "read %d mail again"
+msgid_plural "read %d mails again"
+msgstr[0] "volver a leer %d correo"
+msgstr[1] "volver a leer %d correos"
+
+#: src/Command/CollectCommand.php:163
+msgid "import uploaded files"
+msgstr "importar ficheros subidos"
+
+#: src/Command/CollectCommand.php:164
+msgid "collect everything pending"
+msgstr "recoger todo lo pendiente"
+
+#: src/Command/CollectCommand.php:165
+#, php-format
+msgid "collect up to %d mails"
+msgstr "recoger hasta %d correos"
+
+#: src/Command/CollectCommand.php:167
+#, php-format
+msgid "DMARC in the background: start (%s)"
+msgstr "DMARC en segundo plano: inicio (%s)"
+
+#: src/Command/CollectCommand.php:190
+#, php-format
+msgid "Slow mail (UID %1$d, %2$.1f MB): download %3$d s, saving %4$d s, %5$d report(s)"
+msgstr "Correo lento (UID %1$d, %2$.1f MB): descarga %3$d s, guardado %4$d s, %5$d informe(s)"
+
+#: src/Command/CollectCommand.php:199
+#, php-format
+msgid "%1$d of %2$d mails, %3$d new reports"
+msgstr "%1$d de %2$d correos, %3$d informes nuevos"
+
+#: src/Command/CollectCommand.php:204
+#, php-format
+msgid "Background (%1$s): %2$d mails, %3$d new reports, %4$d duplicates, %5$d without report, %6$d with errors, %7$d skipped; %8$d left"
+msgstr "Segundo plano (%1$s): %2$d correos, %3$d informes nuevos, %4$d duplicados, %5$d sin informe, %6$d con error, %7$d omitidos; quedan %8$d"
+
+#: src/Command/CollectCommand.php:213
+#, php-format
+msgid "%d reconnection to the server"
+msgid_plural "%d reconnections to the server"
+msgstr[0] "%d reconexión con el servidor"
+msgstr[1] "%d reconexiones con el servidor"
+
+#: src/Command/CollectCommand.php:218
+msgid "The automatic action will go on with the rest (or press \"Collect now\" again)."
+msgstr "El resto lo seguirá la acción automática (o pulse otra vez «Recoger ahora»)."
+
+#: src/Command/CollectCommand.php:226
+msgid "There are new alerts."
+msgstr "Hay avisos nuevos."
+
+#: src/Command/CollectCommand.php:231 src/Command/CollectCommand.php:243
+msgid "Nothing to do."
+msgstr "Nada que hacer."
+
+#: src/Command/CollectCommand.php:239
+#, php-format
+msgid "background (%s)"
+msgstr "segundo plano (%s)"
+
+#: src/Command/CollectCommand.php:285
+#, php-format
+msgid "%1$d file(s) imported: %2$d new report(s)"
+msgstr "%1$d fichero(s) importados: %2$d informe(s) nuevos"
+
+#: src/Command/CollectCommand.php:286
+#, php-format
+msgid "%d with errors or without a report (see the list of processed mails)"
+msgstr "%d con error o sin informe (ver la lista de correos procesados)"
+
+#: src/Cron.php:50
+msgid "Collect the DMARC reports from the mailbox"
+msgstr "Recoger los informes DMARC del buzón"
+
+#: src/Cron.php:50
+msgid "Mails per run (0 = the configured one)"
+msgstr "Correos por ejecución (0 = el de la configuración)"
+
+#: src/Cron.php:51
+msgid "Reverse name, sender and reputation of the new IPs"
+msgstr "Nombre inverso y emisor de las IP nuevas"
+
+#: src/Cron.php:51
+msgid "IPs per run"
+msgstr "IP por ejecución"
+
+#: src/Cron.php:52
+msgid "DMARC daily alerts, summary and cleanup"
+msgstr "Avisos diarios, resumen y limpieza DMARC"
+
+#: src/Cron.php:60
+msgid "The mailbox is not configured"
+msgstr "El buzón no está configurado"
+
+#: src/Cron.php:69
+msgid "A DMARC collection is already running in the background"
+msgstr "Ya hay una recogida DMARC en marcha en segundo plano"
+
+#: src/Cron.php:74
+#, php-format
+msgid "Collection started in the background (up to %d mails)"
+msgstr "Recogida lanzada en segundo plano (hasta %d correos)"
+
+#: src/Cron.php:97
+msgid "An IP lookup is already running in the background"
+msgstr "Ya hay una consulta de IP en marcha en segundo plano"
+
+#: src/Cron.php:102
+msgid "Reverse names and AbuseIPDB started in the background"
+msgstr "Nombres inversos y AbuseIPDB lanzados en segundo plano"
+
+#: src/Cron.php:124
+msgid "DMARC in the background: reverse names and AbuseIPDB"
+msgstr "DMARC en segundo plano: nombres inversos y AbuseIPDB"
+
+#: src/Cron.php:130
+#, php-format
+msgid "%d reverse name"
+msgid_plural "%d reverse names"
+msgstr[0] "%d nombre inverso"
+msgstr[1] "%d nombres inversos"
+
+#: src/Cron.php:133 src/Cron.php:136
+#, php-format
+msgid "AbuseIPDB: %d IPs checked"
+msgstr "AbuseIPDB: %d IP consultadas"
+
+#: src/Cron.php:136
+#, php-format
+msgid "%d with errors"
+msgstr "%d con error"
+
+#: src/Cron.php:144
+msgid "Background"
+msgstr "Segundo plano"
+
+#: src/Cron.php:154
+#, php-format
+msgid "New alerts: %d"
+msgstr "Avisos nuevos: %d"
+
+#: src/Cron.php:156
+msgid "Periodic summary generated"
+msgstr "Resumen periódico generado"
+
+#: src/Cron.php:160
+#, php-format
+msgid "Old reports deleted: %d"
+msgstr "Informes antiguos borrados: %d"
+
+#: src/Cron.php:170
+#, php-format
+msgid "%1$d mails checked: %2$d imported (%3$d reports), %4$d duplicates, %5$d not reports, %6$d with errors, %7$d skipped, %8$d mailbox actions; %9$d left"
+msgstr "%1$d correos revisados: %2$d importados (%3$d informes), %4$d duplicados, %5$d no eran informes, %6$d con error, %7$d omitidos, %8$d acciones en el buzón; quedan %9$d"
+
+#: src/Dashboard.php:49
+msgid "Summary"
+msgstr "Resumen"
+
+#: src/Dashboard.php:50
+msgid "Evolution"
+msgstr "Evolución"
+
+#: src/Dashboard.php:51
+msgid "Sending sources"
+msgstr "Fuentes de envío"
+
+#: src/Dashboard.php:52
+msgid "Failures"
+msgstr "Fallos"
+
+#: src/Dashboard.php:53 src/NotificationTargetAlert.php:129
+msgid "Recommendations"
+msgstr "Recomendaciones"
+
+#: src/Dashboard.php:55
+msgid "Alerts"
+msgstr "Avisos"
+
+#: src/Dashboard.php:56
+msgid "Collection"
+msgstr "Recogida"
+
+#: src/Diagnosis.php:90
+msgid "Pass (SPF and DKIM)"
+msgstr "Cumple (SPF y DKIM)"
+
+#: src/Diagnosis.php:91
+msgid "Pass (DKIM only)"
+msgstr "Cumple (solo DKIM)"
+
+#: src/Diagnosis.php:92
+msgid "Pass (SPF only)"
+msgstr "Cumple (solo SPF)"
+
+#: src/Diagnosis.php:93
+msgid "Forwarding or mailing list"
+msgstr "Reenvío o lista de correo"
+
+#: src/Diagnosis.php:94
+msgid "Provider SPF, not aligned and no DKIM"
+msgstr "SPF del proveedor, sin alinear y sin DKIM"
+
+#: src/Diagnosis.php:95
+msgid "DKIM signed by another domain"
+msgstr "DKIM firmado con otro dominio"
+
+#: src/Diagnosis.php:96
+msgid "Invalid DKIM of our domain"
+msgstr "DKIM de nuestro dominio no válido"
+
+#: src/Diagnosis.php:97
+msgid "No authentication"
+msgstr "Sin autenticación"
+
+#: src/Diagnosis.php:98 src/Stats.php:498
+msgid "Unknown"
+msgstr "Desconocido"
+
+#: src/Diagnosis.php:113
+msgid "Messages forwarded by another server or a mailing list: forwarding breaks SPF and sometimes DKIM. This is normal and not spoofing; if the source is trusted, classify it as a forwarder."
+msgstr "Mensajes reenviados por otro servidor o una lista de correo: el reenvío rompe SPF y a veces DKIM. Es normal y no es suplantación; si la fuente es de confianza, clasifíquela como reenviador."
+
+#: src/Diagnosis.php:115
+msgid "The provider sends with its own envelope sender (SPF of its domain) and does not sign with DKIM of our domain. Configure DKIM with our domain at that provider (or an envelope sender of our domain included in the SPF)."
+msgstr "El proveedor envía con su propio remitente de sobre (SPF de su dominio) y no firma con DKIM de nuestro dominio. Hay que configurar DKIM con nuestro dominio en ese proveedor (o un remitente de sobre de nuestro dominio incluido en el SPF)."
+
+#: src/Diagnosis.php:116
+msgid "SPF passes, but for the sending server's domain, not ours, and there is no DKIM of our domain. If it is one of our providers, configure DKIM; if you do not know it, it is a third party using our domain."
+msgstr "SPF pasa, pero para el dominio del servidor que envía, no para el nuestro, y no hay DKIM de nuestro dominio. Si es un proveedor nuestro, configure DKIM; si no lo conoce, es un tercero usando nuestro dominio."
+
+#: src/Diagnosis.php:118
+msgid "The provider signs with DKIM of its own domain (d=…), not ours. Publish in our DNS the DKIM key given by the provider to sign as our domain."
+msgstr "El proveedor firma con DKIM de su propio dominio (d=…), no del nuestro. Publique en nuestro DNS la clave DKIM que da el proveedor para firmar como nuestro dominio."
+
+#: src/Diagnosis.php:119
+msgid "Messages signed with DKIM of another domain. If it is one of our providers, configure DKIM with our domain; otherwise it is a third party using our domain in the From."
+msgstr "Mensajes firmados con DKIM de otro dominio. Si es un proveedor nuestro, configure DKIM con nuestro dominio; si no, es un tercero usando nuestro dominio en el From."
+
+#: src/Diagnosis.php:120
+msgid "It carries a DKIM signature of our domain but it does not validate: selector not published in DNS, rotated key or message modified on the way. If SPF fails too, the message fails."
+msgstr "Lleva firma DKIM de nuestro dominio pero no se valida: selector sin publicar en DNS, clave rotada o mensaje modificado por el camino. Si además falla SPF, el mensaje no cumple."
+
+#: src/Diagnosis.php:122
+msgid "Authorized source without valid SPF or DKIM: add its IP or its include to the SPF and configure DKIM."
+msgstr "Fuente autorizada sin SPF ni DKIM válidos: añada su IP o su include al SPF y configure DKIM."
+
+#: src/Diagnosis.php:123
+msgid "Neither SPF nor DKIM: possible spoofing of our domain. Review the source and classify it as unauthorized; with p=quarantine or p=reject those messages do not reach the inbox."
+msgstr "Ni SPF ni DKIM: posible suplantación de nuestro dominio. Revise la fuente y clasifíquela como no autorizada; con p=quarantine o p=reject esos mensajes no llegan a la bandeja de entrada."
+
+#: src/Diagnosis.php:199
+msgid "Own server"
+msgstr "Servidor propio"
+
+#: src/Diagnosis.php:254
+msgid "Authorized"
+msgstr "Autorizada"
+
+#: src/Diagnosis.php:255
+msgid "Unauthorized"
+msgstr "No autorizada"
+
+#: src/Diagnosis.php:256
+msgid "Forwarder"
+msgstr "Reenviador"
+
+#: src/Diagnosis.php:257
+msgid "Unclassified"
+msgstr "Sin clasificar"
+
+#: src/GoogleAuth.php:103
+msgid "Google did not return a refresh token. Remove the plugin's access in myaccount.google.com › Security › Third-party connections and connect again"
+msgstr "Google no ha devuelto el token de renovación. Quite el acceso del plugin en myaccount.google.com › Seguridad › Conexiones con terceros y vuelva a conectar"
+
+#: src/GoogleAuth.php:117
+msgid "Connect with Google in the plugin configuration first"
+msgstr "Falta conectar con Google en la configuración del plugin"
+
+#: src/GoogleAuth.php:126
+msgid "Google did not give an access token"
+msgstr "Google no ha dado el token de acceso"
+
+#: src/GoogleAuth.php:157
+msgid "the authorization expired or was revoked, or the code was already used: press \"Connect with Google\" again"
+msgstr "la autorización ha caducado o se ha revocado, o el código ya se usó: vuelva a pulsar «Conectar con Google»"
+
+#: src/GoogleAuth.php:158
+msgid "the OAuth client ID or secret is wrong"
+msgstr "el ID o el secreto del cliente OAuth no son correctos"
+
+#: src/GoogleAuth.php:159
+msgid "the redirect URI does not match the one authorized in the Google OAuth client"
+msgstr "la dirección de retorno no coincide con la autorizada en el cliente OAuth de Google"
+
+#: src/GoogleAuth.php:160
+msgid "the OAuth client cannot use this kind of authorization"
+msgstr "el cliente OAuth no puede usar este tipo de autorización"
+
+#: src/GoogleAuth.php:163
+#, php-format
+msgid "Google rejected the request (HTTP %1$d%2$s)%3$s"
+msgstr "Google ha rechazado la petición (HTTP %1$d%2$s)%3$s"
+
+#: src/GoogleAuth.php:198
+#, php-format
+msgid "Cannot connect to Google (%s)"
+msgstr "No se puede conectar con Google (%s)"
+
+#: src/Imap.php:84
+#, php-format
+msgid "Cannot connect to %1$s:%2$d (%3$s)"
+msgstr "No se puede conectar con %1$s:%2$d (%3$s)"
+
+#: src/Imap.php:91
+#, php-format
+msgid "Unexpected answer from the server: %s"
+msgstr "Respuesta inesperada del servidor: %s"
+
+#: src/Imap.php:103
+msgid "TLS negotiation failed (STARTTLS)"
+msgstr "Falló la negociación TLS (STARTTLS)"
+
+#: src/Imap.php:112
+msgid "The server does not allow LOGIN without encryption"
+msgstr "El servidor no admite LOGIN sin cifrado"
+
+#: src/Imap.php:277 src/Imap.php:335
+msgid "No IMAP connection"
+msgstr "No hay conexión IMAP"
+
+#: src/Imap.php:312
+msgid "The folder is open read-only"
+msgstr "La carpeta está abierta en solo lectura"
+
+#: src/Imap.php:393
+msgid "Timed out talking to the IMAP server"
+msgstr "Tiempo de espera agotado con el servidor IMAP"
+
+#: src/Imap.php:393
+msgid "The IMAP server closed the connection"
+msgstr "El servidor IMAP cerró la conexión"
+
+#: src/Imap.php:415
+msgid "IMAP connection interrupted while reading a message"
+msgstr "Conexión IMAP interrumpida leyendo un mensaje"
+
+#: src/Imap.php:431
+msgid "Cannot write to the IMAP connection"
+msgstr "No se puede escribir en la conexión IMAP"
+
+#: src/Imap.php:441
+msgid "Invalid characters (line break) in an IMAP value"
+msgstr "Caracteres no válidos (salto de línea) en un valor IMAP"
+
+#: src/Importer.php:74
+msgid "Imported"
+msgstr "Importado"
+
+#: src/Importer.php:75
+msgid "Duplicate"
+msgstr "Duplicado"
+
+#: src/Importer.php:76
+msgid "Not a report"
+msgstr "No es un informe"
+
+#: src/Importer.php:78
+msgid "Skipped"
+msgstr "Omitido"
+
+#: src/NotificationTargetAlert.php:106
+msgid "Source IP"
+msgstr "IP de origen"
+
+#: src/NotificationTargetAlert.php:107
+msgid "Reverse name (PTR)"
+msgstr "Nombre inverso (PTR)"
+
+#: src/NotificationTargetAlert.php:110
+msgid "DMARC compliance"
+msgstr "Cumplimiento DMARC"
+
+#: src/NotificationTargetAlert.php:111
+msgid "Diagnosis"
+msgstr "Diagnóstico"
+
+#: src/NotificationTargetAlert.php:113
+msgid "Messages of the period"
+msgstr "Mensajes del periodo"
+
+#: src/NotificationTargetAlert.php:114
+#, php-format
+msgid "% passing DMARC"
+msgstr "% que cumple DMARC"
+
+#: src/NotificationTargetAlert.php:116
+msgid "Dashboard link"
+msgstr "Enlace al cuadro de mando"
+
+#: src/NotificationTargetAlert.php:120
+msgid "Compliance"
+msgstr "Cumplimiento"
+
+#: src/NotificationTargetAlert.php:122
+msgid "Recommendation"
+msgstr "Recomendación"
+
+#: src/NotificationTargetAlert.php:128
+msgid "Open the DMARC dashboard"
+msgstr "Abrir el cuadro de mando DMARC"
+
+#: src/NotificationTargetAlert.php:130
+msgid "List of domains"
+msgstr "Lista de dominios"
+
+#: src/NotificationTargetAlert.php:131
+msgid "List of recommendations"
+msgstr "Lista de recomendaciones"
+
+#: src/Profile.php:70
+msgid "DMARC dashboard"
+msgstr "Cuadro de mando DMARC"
+
+#: src/Profile.php:83
+msgid "Read: see the dashboard. Update: classify sources, collect now, import files and close alerts. The mailbox connection is changed by whoever has the GLPI configuration right."
+msgstr "Lectura: ver el cuadro de mando. Actualizar: clasificar fuentes, recoger ahora, importar ficheros y cerrar avisos. La conexión al buzón la cambia quien tiene derecho de configuración de GLPI."
+
+#: src/ReportParser.php:64
+msgid "Report too large"
+msgstr "Informe demasiado grande"
+
+#: src/ReportParser.php:101
+msgid "The XML declares a DOCTYPE: it is not processed"
+msgstr "El XML declara un DOCTYPE: no se procesa"
+
+#: src/ReportParser.php:109
+msgid "Invalid XML"
+msgstr "XML no válido"
+
+#: src/ReportParser.php:109
+#, php-format
+msgid "line %d"
+msgstr "línea %d"
+
+#: src/ReportParser.php:116
+#, php-format
+msgid "Not a DMARC aggregate report (root <%s>)"
+msgstr "No es un informe DMARC agregado (raíz <%s>)"
+
+#: src/ReportParser.php:136
+msgid "The report has no org_name or report_id"
+msgstr "Al informe le falta org_name o report_id"
+
+#: src/ReportParser.php:139
+msgid "The report has no period (date_range)"
+msgstr "Al informe le falta el periodo (date_range)"
+
+#: src/ReportParser.php:154
+msgid "The report has no policy_published/domain"
+msgstr "Al informe le falta policy_published/domain"
+
+#: src/ReportParser.php:217
+msgid "zlib is not available"
+msgstr "zlib no disponible"
+
+#: src/ReportParser.php:225
+msgid "Damaged gzip file"
+msgstr "Fichero gzip dañado"
+
+#: src/ReportParser.php:229 src/ReportParser.php:258 src/ReportParser.php:269
+msgid "The uncompressed report exceeds the size limit"
+msgstr "El informe descomprimido supera el límite de tamaño"
+
+#: src/ReportParser.php:241
+msgid "Cannot create a temporary file"
+msgstr "No se puede crear un fichero temporal"
+
+#: src/ReportParser.php:247
+msgid "Damaged zip file"
+msgstr "Fichero zip dañado"
+
+#: src/Stats.php:282
+#, php-format
+msgid "%d day without reports"
+msgid_plural "%d days without reports"
+msgstr[0] "%d día sin informes"
+msgstr[1] "%d días sin informes"
+
+#: src/Stats.php:286
+msgid "authorized sources failing"
+msgstr "fuentes autorizadas que fallan"
+
+#: src/Stats.php:289
+msgid "occasional failures of authorized sources"
+msgstr "fallos puntuales de fuentes autorizadas"
+
+#: src/Stats.php:295
+msgid "possible spoofing and the policy does not stop it (p=none)"
+msgstr "suplantación posible y la política no la frena (p=none)"
+
+#: src/Stats.php:298
+#, php-format
+msgid "unknown sources (stopped by p=%s)"
+msgstr "fuentes desconocidas (frenadas por p=%s)"
+
+#: src/Stats.php:303
+msgid "policy in monitoring mode (p=none)"
+msgstr "política en modo observación (p=none)"
+
+#: src/Stats.php:306
+msgid "Good"
+msgstr "Bien"
+
+#: src/Stats.php:306
+msgid "Review"
+msgstr "Revisar"
+
+#: src/Stats.php:306
+msgid "Attention"
+msgstr "Atención"
+
+#: src/Watcher.php:97
+#, php-format
+msgid "The source %1$s (%2$s), classified as unauthorized, sent %3$d messages as %4$s that fail DMARC."
+msgstr "La fuente %1$s (%2$s), clasificada como no autorizada, ha enviado %3$d mensajes como %4$s que no cumplen DMARC."
+
+#: src/Watcher.php:98
+#, php-format
+msgid "An unclassified source, %1$s (%2$s), sent %3$d messages as %4$s that fail DMARC."
+msgstr "Una fuente sin clasificar, %1$s (%2$s), ha enviado %3$d mensajes como %4$s que no cumplen DMARC."
+
+#: src/Watcher.php:100
+msgid "no reverse name"
+msgstr "sin nombre inverso"
+
+#: src/Watcher.php:160
+#, php-format
+msgid "The authorized source %1$s (%2$s) passes DMARC in only %3$s of its %4$d messages of the last %5$d days for %6$s."
+msgstr "La fuente autorizada %1$s (%2$s) solo cumple DMARC en el %3$s de sus %4$d mensajes de los últimos %5$d días para %6$s."
+
+#: src/Watcher.php:197
+#, php-format
+msgid "No DMARC reports received for %1$s since %2$s (%3$d days). Check the _dmarc record (rua=), the mailbox folder and the collection."
+msgstr "No se reciben informes DMARC de %1$s desde el %2$s (%3$d días). Compruebe el registro _dmarc (rua=), la carpeta del buzón y la recogida."
+
+#: src/Watcher.php:223
+#, php-format
+msgid "DMARC summary from %1$s to %2$s: %3$s messages, %4$s pass DMARC."
+msgstr "Resumen DMARC del %1$s al %2$s: %3$s mensajes, el %4$s cumple DMARC."
+
+#: templates/config.html.twig:7
+msgid "DMARC — configuration"
+msgstr "DMARC — configuración"
+
+#: templates/config.html.twig:8
+msgid "Dashboard"
+msgstr "Cuadro de mando"
+
+#: templates/config.html.twig:14
+msgid "Connection OK."
+msgstr "Conexión correcta."
+
+#: templates/config.html.twig:16
+#, php-format
+msgid "The folder \"%1$s\" has %2$s mails; %3$s pending import"
+msgstr "La carpeta «%1$s» tiene %2$s correos; %3$s pendientes de importar"
+
+#: templates/config.html.twig:16 templates/dashboard.html.twig:178 templates/dashboard.html.twig:472
+#, php-format
+msgid "since %s"
+msgstr "desde %s"
+
+#: templates/config.html.twig:18
+#, php-format
+msgid "The folder \"%s\" does not exist."
+msgstr "No existe la carpeta «%s»."
+
+#: templates/config.html.twig:20
+#, php-format
+msgid "The destination folder \"%s\" does not exist: it will be created by the first collection."
+msgstr "La carpeta de destino «%s» no existe: se creará en la primera recogida."
+
+#: templates/config.html.twig:21
+#, php-format
+msgid "Mailbox folders (%d)"
+msgstr "Carpetas del buzón (%d)"
+
+#: templates/config.html.twig:25
+msgid "Could not connect:"
+msgstr "No se ha podido conectar:"
+
+#: templates/config.html.twig:31
+msgid "Entity"
+msgstr "Entidad"
+
+#: templates/config.html.twig:34
+msgid "Entity of the plugin"
+msgstr "Entidad del plugin"
+
+#: templates/config.html.twig:39
+msgid "Also visible from its sub-entities"
+msgstr "Visible también desde sus subentidades"
+
+#: templates/config.html.twig:42
+msgid "Tools › DMARC is only shown when the active entity is this one (or a tree that includes it) and the profile has the DMARC right."
+msgstr "Herramientas › DMARC solo aparece cuando la entidad activa es esta (o un árbol que la incluye) y el perfil tiene el derecho DMARC."
+
+#: templates/config.html.twig:43
+msgid "Alerts belong to this entity (for \"Entity administrator\" in the notifications)."
+msgstr "Los avisos pertenecen a esta entidad (para «Administrador de la entidad» en las notificaciones)."
+
+#: templates/config.html.twig:49 templates/dashboard.html.twig:487
+msgid "Mailbox"
+msgstr "Buzón"
+
+#: templates/config.html.twig:52
+msgid "IMAP server"
+msgstr "Servidor IMAP"
+
+#: templates/config.html.twig:56
+msgid "Port"
+msgstr "Puerto"
+
+#: templates/config.html.twig:60
+msgid "Encryption"
+msgstr "Cifrado"
+
+#: templates/config.html.twig:62
+msgid "None (tests only)"
+msgstr "Ninguno (solo pruebas)"
+
+#: templates/config.html.twig:66
+msgid "Validate the certificate"
+msgstr "Validar el certificado"
+
+#: templates/config.html.twig:70
+msgid "User (mailbox address)"
+msgstr "Usuario (dirección del buzón)"
+
+#: templates/config.html.twig:74 templates/report.html.twig:41
+msgid "Authentication"
+msgstr "Autenticación"
+
+#: templates/config.html.twig:76
+msgid "Google (Gmail / Workspace): OAuth with consent"
+msgstr "Google (Gmail / Workspace): OAuth con consentimiento"
+
+#: templates/config.html.twig:77
+msgid "User and password (any IMAP server)"
+msgstr "Usuario y contraseña (IMAP genérico)"
+
+#: templates/config.html.twig:82
+msgid "Connection with Google (OAuth, with the consent of the mailbox owner)"
+msgstr "Conexión con Google (OAuth, con el consentimiento del dueño del buzón)"
+
+#: templates/config.html.twig:85
+#, php-format
+msgid "Connected as %s. The permission only gives access to that mailbox."
+msgstr "Conectado como %s. El permiso solo da acceso a ese buzón."
+
+#: templates/config.html.twig:87
+msgid "Disconnect from Google? Reports will not be collected until you connect again."
+msgstr "¿Desconectar de Google? Dejarán de recogerse informes hasta volver a conectar."
+
+#: templates/config.html.twig:88
+msgid "Disconnect"
+msgstr "Desconectar"
+
+#: templates/config.html.twig:93
+msgid "OAuth client ID"
+msgstr "ID de cliente OAuth"
+
+#: templates/config.html.twig:97
+msgid "Client secret"
+msgstr "Secreto del cliente"
+
+#: templates/config.html.twig:98 templates/config.html.twig:118 templates/config.html.twig:211
+msgid "(saved; empty = keep)"
+msgstr "(guardado; vacío = mantener)"
+
+#: templates/config.html.twig:99
+msgid "Delete the saved secret"
+msgstr "Borrar el secreto guardado"
+
+#: templates/config.html.twig:103
+msgid "Connect with Google again"
+msgstr "Volver a conectar con Google"
+
+#: templates/config.html.twig:103
+msgid "Save and connect with Google"
+msgstr "Guardar y conectar con Google"
+
+#: templates/config.html.twig:106
+msgid "In Google Cloud"
+msgstr "En Google Cloud"
+
+#: templates/config.html.twig:106
+msgid "once"
+msgstr "una sola vez"
+
+#: templates/config.html.twig:106
+msgid "Credentials › Create credentials › OAuth client ID › type \"Web application\". In \"Authorized redirect URIs\" enter exactly:"
+msgstr "Credenciales › Crear credenciales › ID de cliente de OAuth › tipo «Aplicación web». En «URI de redireccionamiento autorizados» ponga exactamente:"
+
+#: templates/config.html.twig:108
+msgid "In the consent screen choose the user type \"Internal\" (with \"External\" in testing, Google expires the permission after 7 days)."
+msgstr "En la pantalla de consentimiento elija el tipo de usuario «Interno» (con «Externo» en pruebas, Google caduca el permiso a los 7 días)."
+
+#: templates/config.html.twig:109
+#, php-format
+msgid "Press the button: Google will ask to sign in with the mailbox account and to allow access to Gmail (%s, the only scope that allows IMAP)."
+msgstr "Pulse el botón: Google pedirá iniciar sesión con la cuenta del buzón y autorizar el acceso a Gmail (%s, el único ámbito que permite IMAP)."
+
+#: templates/config.html.twig:110
+msgid "It is only saved if the authorized account is the mailbox one. No service account or domain-wide delegation is used."
+msgstr "Solo se guarda si la cuenta autorizada es la del buzón. No se usa ninguna cuenta de servicio ni delegación de dominio."
+
+#: templates/config.html.twig:111
+msgid "The GLPI address must be https (the \"URL of the application\" in Setup › General). The server needs outgoing access to"
+msgstr "La dirección de GLPI debe ser https (la «URL de la aplicación» en Configuración › General). El servidor necesita salida a"
+
+#: templates/config.html.twig:117
+msgid "Password"
+msgstr "Contraseña"
+
+#: templates/config.html.twig:119
+msgid "Delete the saved password"
+msgstr "Borrar la contraseña guardada"
+
+#: templates/config.html.twig:120
+msgid "For any IMAP server. Gmail no longer accepts the normal password; an app password may work, but Google discourages it and the administrator can block it: with Gmail use OAuth."
+msgstr "Para cualquier servidor IMAP. Gmail ya no acepta la contraseña normal; una contraseña de aplicación puede funcionar, pero Google la desaconseja y el administrador puede bloquearla: con Gmail use OAuth."
+
+#: templates/config.html.twig:124
+msgid "Reports folder"
+msgstr "Carpeta de los informes"
+
+#: templates/config.html.twig:126
+msgid "In Gmail the label is the folder (sub-labels with \"/\")."
+msgstr "En Gmail, la etiqueta es la carpeta (subetiquetas con «/»)."
+
+#: templates/config.html.twig:129
+msgid "Import mails received since"
+msgstr "Importar correos recibidos desde"
+
+#: templates/config.html.twig:131
+msgid "For the first load. Empty: the whole folder."
+msgstr "Para la primera carga. Vacío: toda la carpeta."
+
+#: templates/config.html.twig:135
+msgid "Mailbox mode"
+msgstr "Modo del buzón"
+
+#: templates/config.html.twig:138
+msgid "Read-only"
+msgstr "Solo lectura"
+
+#: templates/config.html.twig:138
+msgid "opens the folder in examine mode; nothing is marked as read, moved or deleted."
+msgstr "abre la carpeta en modo examinar; no marca como leído, no mueve ni borra nada."
+
+#: templates/config.html.twig:141
+msgid "Read-write"
+msgstr "Con escritura"
+
+#: templates/config.html.twig:141
+msgid "after importing a mail (or if it was already imported) it does this:"
+msgstr "después de importar un correo (o si ya estaba importado) hace lo siguiente:"
+
+#: templates/config.html.twig:145
+msgid "Mark it as read"
+msgstr "Marcarlo como leído"
+
+#: templates/config.html.twig:145
+msgid "Move it to another folder"
+msgstr "Moverlo a otra carpeta"
+
+#: templates/config.html.twig:145
+msgid "Delete it"
+msgstr "Borrarlo"
+
+#: templates/config.html.twig:151
+msgid "Destination folder (when moving)"
+msgstr "Carpeta de destino (si mueve)"
+
+#: templates/config.html.twig:153
+msgid "Mails with errors or that are not reports are left where they are."
+msgstr "Los correos con error o que no son informes se dejan donde están."
+
+#: templates/config.html.twig:154
+msgid "In Gmail, \"delete\" from IMAP depends on the account option (Settings › Forwarding and POP/IMAP): remove the label, move to the trash or delete."
+msgstr "En Gmail, «borrar» desde IMAP depende de la opción de la cuenta (Ajustes › Reenvío y correo POP/IMAP): quitar la etiqueta, mover a la papelera o eliminar."
+
+#: templates/config.html.twig:155
+msgid "\"Move\" replaces the reports label with the destination one."
+msgstr "«Mover» cambia la etiqueta de los informes por la de destino."
+
+#: templates/config.html.twig:163
+msgid "Processing and data"
+msgstr "Proceso y datos"
+
+#: templates/config.html.twig:166
+msgid "Mails per run of the automatic action"
+msgstr "Correos por ejecución de la acción automática"
+
+#: templates/config.html.twig:170
+msgid "Maximum size of a mail (MB)"
+msgstr "Tamaño máximo de un correo (MB)"
+
+#: templates/config.html.twig:174
+#, php-format
+msgid "Keep the data (months, at most %d)"
+msgstr "Conservar los datos (meses, máximo %d)"
+
+#: templates/config.html.twig:178
+msgid "Keep the original XML of each report (compressed)"
+msgstr "Guardar el XML original de cada informe (comprimido)"
+
+#: templates/config.html.twig:179
+msgid "Look up the reverse name (PTR) of the IPs"
+msgstr "Buscar el nombre inverso (PTR) de las IP"
+
+#: templates/config.html.twig:182
+msgid "Networks of our own mail servers"
+msgstr "Redes de nuestros servidores de correo"
+
+#: templates/config.html.twig:184
+msgid "Their IPs are shown as \"Own server\"."
+msgstr "Sus IP salen como «Servidor propio»."
+
+#: templates/config.html.twig:187
+#, php-format
+msgid "Compliance goal to recommend tightening the policy (%)"
+msgstr "Cumplimiento objetivo para recomendar endurecer la política (%)"
+
+#: templates/config.html.twig:191
+msgid "Days with the same policy before recommending the next step"
+msgstr "Días con la misma política antes de recomendar el siguiente paso"
+
+#: templates/config.html.twig:199
+msgid "AbuseIPDB (reputation of the sending IPs)"
+msgstr "AbuseIPDB (reputación de las IP que envían)"
+
+#: templates/config.html.twig:203
+msgid "Query AbuseIPDB"
+msgstr "Consultar AbuseIPDB"
+
+#: templates/config.html.twig:203
+msgid "for each public IP of the reports"
+msgstr "para cada IP pública de los informes"
+
+#: templates/config.html.twig:204
+msgid "It is queried in the background (\"resolve\" automatic action and after each collection), the IPs failing DMARC first."
+msgstr "Se consulta en segundo plano (acción automática «resolve» y al terminar cada recogida), primero las IP que no cumplen DMARC."
+
+#: templates/config.html.twig:205
+#, php-format
+msgid "The result is kept on the source and not asked again until it expires. The panels show the % with a link to abuseipdb.com."
+msgstr "El resultado se guarda en la fuente y no se vuelve a pedir hasta que caduca. En los paneles sale el % con enlace a abuseipdb.com."
+
+#: templates/config.html.twig:206
+msgid "Outgoing access to api.abuseipdb.com:443 is needed."
+msgstr "Hace falta salida a api.abuseipdb.com:443."
+
+#: templates/config.html.twig:209
+msgid "API key"
+msgstr "Clave de la API"
+
+#: templates/config.html.twig:212
+msgid "Delete the saved key"
+msgstr "Borrar la clave guardada"
+
+#: templates/config.html.twig:214
+msgid "No key: nothing is queried."
+msgstr "Sin clave: no se consulta."
+
+#: templates/config.html.twig:214
+msgid "Create one for free at abuseipdb.com (Account › API)."
+msgstr "Se crea gratis en abuseipdb.com (Cuenta › API)."
+
+#: templates/config.html.twig:218
+msgid "Query an IP again after (days)"
+msgstr "Volver a consultar una IP tras (días)"
+
+#: templates/config.html.twig:222
+msgid "Maximum queries per day"
+msgstr "Consultas al día como máximo"
+
+#: templates/config.html.twig:224
+msgid "The free plan allows 1,000 per day per account."
+msgstr "El plan gratuito permite 1.000 al día por cuenta."
+
+#: templates/config.html.twig:227
+#, php-format
+msgid "Today: %d query."
+msgid_plural "Today: %d queries."
+msgstr[0] "Hoy: %d consulta."
+msgstr[1] "Hoy: %d consultas."
+
+#: templates/config.html.twig:228
+#, php-format
+msgid "IPs with data: %1$d of %2$d sources."
+msgstr "IP con datos: %1$d de %2$d fuentes."
+
+#: templates/config.html.twig:229 src/AbuseIpdb.php:107
+#, php-format
+msgid "AbuseIPDB asked to wait until %s"
+msgstr "AbuseIPDB pidió esperar hasta %s"
+
+#: templates/config.html.twig:235
+msgid "Mail notifications"
+msgstr "Notificaciones por correo"
+
+#: templates/config.html.twig:239
+msgid "Send notifications"
+msgstr "Enviar notificaciones"
+
+#: templates/config.html.twig:239
+msgid "global switch of the plugin"
+msgstr "interruptor general del plugin"
+
+#: templates/config.html.twig:240
+msgid "GLPI notifications are used: recipients, texts and activation of each one in"
+msgstr "Se usan las notificaciones de GLPI: destinatarios, textos y activación de cada una en"
+
+#: templates/config.html.twig:241
+msgid "Setup › Notifications"
+msgstr "Configuración › Notificaciones"
+
+#: templates/config.html.twig:241
+msgid "type \"DMARC alert\""
+msgstr "tipo «Aviso DMARC»"
+
+#: templates/config.html.twig:241
+msgid "GLPI mail notifications must be enabled."
+msgstr "Hacen falta las notificaciones por correo de GLPI activadas."
+
+#: templates/config.html.twig:242
+msgid "With the switch off the alerts are still recorded in the Alerts tab."
+msgstr "Con el interruptor apagado los avisos se siguen registrando en la pestaña Avisos."
+
+#: templates/config.html.twig:245
+msgid "Minimum messages to alert about a source"
+msgstr "Mensajes mínimos para avisar de una fuente"
+
+#: templates/config.html.twig:247
+msgid "For unclassified sources. Unauthorized ones always alert."
+msgstr "Para fuentes sin clasificar. Las no autorizadas avisan siempre."
+
+#: templates/config.html.twig:250
+#, php-format
+msgid "Alert if an authorized source passes less than (%)"
+msgstr "Avisar si una fuente autorizada cumple menos del (%)"
+
+#: templates/config.html.twig:252
+msgid "Computed over the last 7 days."
+msgstr "Calculado sobre los últimos 7 días."
+
+#: templates/config.html.twig:255
+msgid "Alert if a domain has no reports for (days)"
+msgstr "Avisar si un dominio lleva sin informes (días)"
+
+#: templates/config.html.twig:259
+msgid "Alert after consecutive collection failures"
+msgstr "Avisar tras fallos seguidos de la recogida"
+
+#: templates/config.html.twig:263
+msgid "Weekly summary"
+msgstr "Resumen semanal"
+
+#: templates/config.html.twig:265
+msgid "Do not send"
+msgstr "No enviar"
+
+#: templates/config.html.twig:265
+msgid "On Mondays"
+msgstr "Los lunes"
+
+#: templates/config.html.twig:265
+msgid "On Tuesdays"
+msgstr "Los martes"
+
+#: templates/config.html.twig:265
+msgid "On Wednesdays"
+msgstr "Los miércoles"
+
+#: templates/config.html.twig:265
+msgid "On Thursdays"
+msgstr "Los jueves"
+
+#: templates/config.html.twig:265
+msgid "On Fridays"
+msgstr "Los viernes"
+
+#: templates/config.html.twig:265
+msgid "On Saturdays"
+msgstr "Los sábados"
+
+#: templates/config.html.twig:265
+msgid "On Sundays"
+msgstr "Los domingos"
+
+#: templates/config.html.twig:274
+msgid "Save"
+msgstr "Guardar"
+
+#: templates/config.html.twig:275
+msgid "Save and test the connection"
+msgstr "Guardar y probar la conexión"
+
+#: templates/dashboard.html.twig:35 templates/report.html.twig:17 src/NotificationTargetAlert.php:112
+msgid "Period"
+msgstr "Periodo"
+
+#: templates/dashboard.html.twig:38 templates/dashboard.html.twig:39 templates/dashboard.html.twig:40
+#, php-format
+msgid "%d day"
+msgid_plural "%d days"
+msgstr[0] "%d día"
+msgstr[1] "%d días"
+
+#: templates/dashboard.html.twig:41
+#, php-format
+msgid "%d month"
+msgid_plural "%d months"
+msgstr[0] "%d mes"
+msgstr[1] "%d meses"
+
+#: templates/dashboard.html.twig:42
+#, php-format
+msgid "%d year"
+msgid_plural "%d years"
+msgstr[0] "%d año"
+msgstr[1] "%d años"
+
+#: templates/dashboard.html.twig:43
+msgid "Everything"
+msgstr "Todo"
+
+#: templates/dashboard.html.twig:44
+msgid "Custom"
+msgstr "A medida"
+
+#: templates/dashboard.html.twig:50
+msgid "From"
+msgstr "Desde"
+
+#: templates/dashboard.html.twig:51
+msgid "To"
+msgstr "Hasta"
+
+#: templates/dashboard.html.twig:55 templates/dashboard.html.twig:285
+msgid "Domains"
+msgstr "Dominios"
+
+#: templates/dashboard.html.twig:59
+#, php-format
+msgid "All (%d)"
+msgstr "Todos (%d)"
+
+#: templates/dashboard.html.twig:59 templates/dashboard.html.twig:470
+#, php-format
+msgid "%1$d of %2$d"
+msgstr "%1$d de %2$d"
+
+#: templates/dashboard.html.twig:62
+msgid "Search…"
+msgstr "Buscar…"
+
+#: templates/dashboard.html.twig:64 templates/dashboard.html.twig:84 templates/dashboard.html.twig:538
+msgid "All"
+msgstr "Todos"
+
+#: templates/dashboard.html.twig:64
+msgid "None"
+msgstr "Ninguno"
+
+#: templates/dashboard.html.twig:74 templates/dashboard.html.twig:94
+msgid "Apply"
+msgstr "Aplicar"
+
+#: templates/dashboard.html.twig:82 templates/dashboard.html.twig:406
+msgid "Reported by"
+msgstr "Informa"
+
+#: templates/dashboard.html.twig:89
+msgid "Group by"
+msgstr "Agrupar"
+
+#: templates/dashboard.html.twig:91 templates/dashboard.html.twig:406
+msgid "Day"
+msgstr "Día"
+
+#: templates/dashboard.html.twig:91
+msgid "Week"
+msgstr "Semana"
+
+#: templates/dashboard.html.twig:91
+msgid "Month"
+msgstr "Mes"
+
+#: templates/dashboard.html.twig:95 templates/dashboard.html.twig:115
+msgid "Configuration"
+msgstr "Configuración"
+
+#: templates/dashboard.html.twig:98
+#, php-format
+msgid "From %1$s to %2$s"
+msgstr "Del %1$s al %2$s"
+
+#: templates/dashboard.html.twig:98
+#, php-format
+msgid "reports from %s"
+msgstr "informes de %s"
+
+#: templates/dashboard.html.twig:113
+msgid "There are no reports yet."
+msgstr "Todavía no hay informes."
+
+#: templates/dashboard.html.twig:115
+msgid "Configure the mailbox in the plugin configuration."
+msgstr "Configure el buzón en la configuración del plugin."
+
+#: templates/dashboard.html.twig:117
+msgid "They will be collected by the \"collect\" automatic action or with \"Collect now\" in the Collection tab."
+msgstr "Se recogerán con la acción automática «collect» o con «Recoger ahora» en la pestaña Recogida."
+
+#: templates/dashboard.html.twig:119
+msgid "You can also import files (.eml, .zip, .gz, .xml) in the Collection tab."
+msgstr "También puede importar ficheros (.eml, .zip, .gz, .xml) en la pestaña Recogida."
+
+#: templates/dashboard.html.twig:124
+msgid "Reported messages"
+msgstr "Mensajes informados"
+
+#: templates/dashboard.html.twig:125 templates/dashboard.html.twig:164 templates/dashboard.html.twig:581
+msgid "Pass DMARC"
+msgstr "Cumplen DMARC"
+
+#: templates/dashboard.html.twig:126 templates/dashboard.html.twig:582
+msgid "DKIM aligned"
+msgstr "DKIM alineado"
+
+#: templates/dashboard.html.twig:127 templates/dashboard.html.twig:583
+msgid "SPF aligned"
+msgstr "SPF alineado"
+
+#: templates/dashboard.html.twig:128
+msgid "Quarantined / rejected"
+msgstr "En cuarentena / rechazados"
+
+#: templates/dashboard.html.twig:129
+msgid "Suspicious sources"
+msgstr "Fuentes sospechosas"
+
+#: templates/dashboard.html.twig:130
+msgid "New unclassified sources"
+msgstr "Fuentes nuevas sin clasificar"
+
+#: templates/dashboard.html.twig:131 templates/dashboard.html.twig:239 templates/dashboard.html.twig:547 templates/report.html.twig:6 src/Dashboard.php:54
+msgid "Reports"
+msgstr "Informes"
+
+#: templates/dashboard.html.twig:144
+#, php-format
+msgid "%s points"
+msgstr "%s puntos"
+
+#: templates/dashboard.html.twig:145
+msgid "vs. the previous period"
+msgstr "frente al periodo anterior"
+
+#: templates/dashboard.html.twig:155
+#, php-format
+msgid "Last report received: %s"
+msgstr "Último informe recibido: %s"
+
+#: templates/dashboard.html.twig:155
+#, php-format
+msgid "last import: %s"
+msgstr "última importación: %s"
+
+#: templates/dashboard.html.twig:156
+#, php-format
+msgid "%d open alert"
+msgid_plural "%d open alerts"
+msgstr[0] "%d aviso abierto"
+msgstr[1] "%d avisos abiertos"
+
+#: templates/dashboard.html.twig:160
+msgid "Status by domain"
+msgstr "Estado por dominio"
+
+#: templates/dashboard.html.twig:164 templates/dashboard.html.twig:224 templates/dashboard.html.twig:353 templates/dashboard.html.twig:406 templates/dashboard.html.twig:439 templates/report.html.twig:26
+msgid "Domain"
+msgstr "Dominio"
+
+#: templates/dashboard.html.twig:164 templates/dashboard.html.twig:439 templates/dashboard.html.twig:547 src/NotificationTargetAlert.php:121
+msgid "Status"
+msgstr "Estado"
+
+#: templates/dashboard.html.twig:164 templates/report.html.twig:24 src/NotificationTargetAlert.php:118
+msgid "Published policy"
+msgstr "Política publicada"
+
+#: templates/dashboard.html.twig:164 templates/dashboard.html.twig:239 templates/dashboard.html.twig:254 templates/dashboard.html.twig:285 templates/dashboard.html.twig:353 templates/dashboard.html.twig:380
+msgid "Messages"
+msgstr "Mensajes"
+
+#: templates/dashboard.html.twig:165
+msgid "Messages from authorized sources that fail"
+msgstr "Mensajes de fuentes autorizadas que no cumplen"
+
+#: templates/dashboard.html.twig:165
+msgid "Authorized failing"
+msgstr "Autorizadas que fallan"
+
+#: templates/dashboard.html.twig:166
+msgid "Failing messages from unclassified or unauthorized sources"
+msgstr "Mensajes que no cumplen de fuentes sin clasificar o no autorizadas"
+
+#: templates/dashboard.html.twig:166
+msgid "Suspicious"
+msgstr "Sospechosos"
+
+#: templates/dashboard.html.twig:167
+msgid "Last report"
+msgstr "Último informe"
+
+#: templates/dashboard.html.twig:173
+msgid "Domain in GLPI"
+msgstr "Ficha del dominio en GLPI"
+
+#: templates/dashboard.html.twig:182
+#, php-format
+msgid "%d IP"
+msgid_plural "%d IPs"
+msgstr[0] "%d IP"
+msgstr[1] "%d IP"
+
+#: templates/dashboard.html.twig:183
+#, php-format
+msgid "%d day ago"
+msgid_plural "%d days ago"
+msgstr[0] "hace %d día"
+msgstr[1] "hace %d días"
+
+#: templates/dashboard.html.twig:186 templates/dashboard.html.twig:344 templates/dashboard.html.twig:585
+msgid "No data in the period."
+msgstr "Sin datos en el periodo."
+
+#: templates/dashboard.html.twig:194
+msgid "Volume and result"
+msgstr "Volumen y resultado"
+
+#: templates/dashboard.html.twig:196
+msgid "Result by cause"
+msgstr "Resultado por causa"
+
+#: templates/dashboard.html.twig:202
+msgid "Main recommendations"
+msgstr "Recomendaciones principales"
+
+#: templates/dashboard.html.twig:203
+msgid "See all"
+msgstr "Ver todas"
+
+#: templates/dashboard.html.twig:214
+msgid "Volume: pass / fail (and what the receivers did)"
+msgstr "Volumen: cumple / no cumple (y qué hicieron los receptores)"
+
+#: templates/dashboard.html.twig:216
+msgid "DMARC compliance, aligned DKIM and aligned SPF"
+msgstr "Cumplimiento DMARC, DKIM alineado y SPF alineado"
+
+#: templates/dashboard.html.twig:221
+msgid "Changes of the published policy"
+msgstr "Cambios de la política publicada"
+
+#: templates/dashboard.html.twig:222
+msgid "As the receivers see it in the reports (not a DNS query)."
+msgstr "Tal como la ven los receptores en los informes (no es una consulta al DNS)."
+
+#: templates/dashboard.html.twig:224
+msgid "Since"
+msgstr "Desde"
+
+#: templates/dashboard.html.twig:224 templates/dashboard.html.twig:406
+msgid "Policy"
+msgstr "Política"
+
+#: templates/dashboard.html.twig:232
+msgid "No reports."
+msgstr "Sin informes."
+
+#: templates/dashboard.html.twig:236
+msgid "Who reports"
+msgstr "Quién informa"
+
+#: templates/dashboard.html.twig:239 templates/report.html.twig:14
+msgid "Organization"
+msgstr "Organización"
+
+#: templates/dashboard.html.twig:239 templates/dashboard.html.twig:254 templates/dashboard.html.twig:285 templates/dashboard.html.twig:406 templates/dashboard.html.twig:576
+msgid "Pass"
+msgstr "Cumple"
+
+#: templates/dashboard.html.twig:239
+msgid "Last"
+msgstr "Último"
+
+#: templates/dashboard.html.twig:243
+msgid "No data."
+msgstr "Sin datos."
+
+#: templates/dashboard.html.twig:250
+msgid "Main senders"
+msgstr "Principales emisores"
+
+#: templates/dashboard.html.twig:252
+msgid "By sender"
+msgstr "Por emisor"
+
+#: templates/dashboard.html.twig:254 templates/dashboard.html.twig:285 templates/dashboard.html.twig:547 templates/report.html.twig:41 src/NotificationTargetAlert.php:108
+msgid "Sender"
+msgstr "Emisor"
+
+#: templates/dashboard.html.twig:254 templates/dashboard.html.twig:286 templates/dashboard.html.twig:353
+msgid "Classification"
+msgstr "Clasificación"
+
+#: templates/dashboard.html.twig:265
+msgid "Sources (IP)"
+msgstr "Fuentes (IP)"
+
+#: templates/dashboard.html.twig:269
+msgid "IP, name or sender"
+msgstr "IP, nombre o emisor"
+
+#: templates/dashboard.html.twig:271
+msgid "All classifications"
+msgstr "Todas las clasificaciones"
+
+#: templates/dashboard.html.twig:274
+msgid "New in the period"
+msgstr "Nuevas en el periodo"
+
+#: templates/dashboard.html.twig:275
+msgid "Search"
+msgstr "Buscar"
+
+#: templates/dashboard.html.twig:284
+msgid "Select all"
+msgstr "Marcar todas"
+
+#: templates/dashboard.html.twig:285
+msgid "Reverse name"
+msgstr "Nombre inverso"
+
+#: templates/dashboard.html.twig:286
+msgid "Failure causes"
+msgstr "Causas de fallo"
+
+#: templates/dashboard.html.twig:286 templates/dashboard.html.twig:353
+msgid "Seen"
+msgstr "Vista"
+
+#: templates/dashboard.html.twig:292
+msgid "See its failures"
+msgstr "Ver sus fallos"
+
+#: templates/dashboard.html.twig:305
+msgid "No sources with these filters."
+msgstr "No hay fuentes con estos filtros."
+
+#: templates/dashboard.html.twig:312
+msgid "With the selected ones:"
+msgstr "Con las marcadas:"
+
+#: templates/dashboard.html.twig:316
+msgid "Comment (optional: provider, service…)"
+msgstr "Comentario (opcional: proveedor, servicio…)"
+
+#: templates/dashboard.html.twig:317
+msgid "Classify"
+msgstr "Clasificar"
+
+#: templates/dashboard.html.twig:323
+msgid "one of our servers or providers (if it fails, fix its SPF or DKIM)."
+msgstr "un servidor o proveedor nuestro (si falla, hay que corregir su SPF o DKIM)."
+
+#: templates/dashboard.html.twig:324
+msgid "known forwardings or mailing lists (their failures do not alert)."
+msgstr "reenvíos o listas de correo conocidos (sus fallos no avisan)."
+
+#: templates/dashboard.html.twig:325
+msgid "spoofing; it alerts every time it shows up again."
+msgstr "suplantación; avisa cada vez que vuelve a aparecer."
+
+#: templates/dashboard.html.twig:326
+msgid "it alerts once if it fails with enough messages."
+msgstr "avisa una vez si falla con suficientes mensajes."
+
+#: templates/dashboard.html.twig:338
+#, php-format
+msgid "%d source"
+msgid_plural "%d sources"
+msgstr[0] "%d fuente"
+msgstr[1] "%d fuentes"
+
+#: templates/dashboard.html.twig:349
+msgid "Messages failing DMARC"
+msgstr "Mensajes que no cumplen DMARC"
+
+#: templates/dashboard.html.twig:350
+msgid "All sources"
+msgstr "Todas las fuentes"
+
+#: templates/dashboard.html.twig:353
+msgid "Source"
+msgstr "Fuente"
+
+#: templates/dashboard.html.twig:353
+msgid "Cause and diagnosis"
+msgstr "Causa y diagnóstico"
+
+#: templates/dashboard.html.twig:353
+msgid "From / envelope"
+msgstr "From / sobre"
+
+#: templates/dashboard.html.twig:353
+msgid "Receiver applied"
+msgstr "Receptor aplicó"
+
+#: templates/dashboard.html.twig:362
+#, php-format
+msgid "Reason given: %s"
+msgstr "Motivo indicado: %s"
+
+#: templates/dashboard.html.twig:363 templates/report.html.twig:54
+#, php-format
+msgid "envelope: %s"
+msgstr "sobre: %s"
+
+#: templates/dashboard.html.twig:370
+msgid "No message fails in the period."
+msgstr "Ningún mensaje falla en el periodo."
+
+#: templates/dashboard.html.twig:378
+msgid "DKIM signatures seen (domain and selector)"
+msgstr "Firmas DKIM vistas (dominio y selector)"
+
+#: templates/dashboard.html.twig:380
+msgid "Report domain"
+msgstr "Dominio del informe"
+
+#: templates/dashboard.html.twig:380
+msgid "Signing domain (d=)"
+msgstr "Dominio firmante (d=)"
+
+#: templates/dashboard.html.twig:380
+msgid "Selector (s=)"
+msgstr "Selector (s=)"
+
+#: templates/dashboard.html.twig:380
+msgid "Valid"
+msgstr "Válidas"
+
+#: templates/dashboard.html.twig:380
+msgid "Last seen"
+msgstr "Última vez"
+
+#: templates/dashboard.html.twig:385
+msgid "No DKIM signatures in the period."
+msgstr "Sin firmas DKIM en el periodo."
+
+#: templates/dashboard.html.twig:395
+msgid "Nothing to recommend in the period."
+msgstr "Nada que recomendar en el periodo."
+
+#: templates/dashboard.html.twig:399
+msgid "Fixed rules over the data of the period. \"Legitimate mail\" is everything except the mail of sources classified as unauthorized or forwarders, so classify the sources before tightening the policy."
+msgstr "Reglas fijas sobre los datos del periodo. Se considera «correo legítimo» todo menos lo de fuentes clasificadas como no autorizadas o reenviadores; por eso conviene clasificar las fuentes antes de endurecer la política."
+
+#: templates/dashboard.html.twig:404
+#, php-format
+msgid "%s report"
+msgid_plural "%s reports"
+msgstr[0] "%s informe"
+msgstr[1] "%s informes"
+
+#: templates/dashboard.html.twig:406
+msgid "Rows"
+msgstr "Filas"
+
+#: templates/dashboard.html.twig:406 templates/report.html.twig:16
+msgid "Report ID"
+msgstr "Id del informe"
+
+#: templates/dashboard.html.twig:415
+msgid "View"
+msgstr "Ver"
+
+#: templates/dashboard.html.twig:416 templates/report.html.twig:8
+msgid "Original XML"
+msgstr "XML original"
+
+#: templates/dashboard.html.twig:418
+msgid "No reports in the period."
+msgstr "Sin informes en el periodo."
+
+#: templates/dashboard.html.twig:422
+msgid "Previous"
+msgstr "Anteriores"
+
+#: templates/dashboard.html.twig:423
+#, php-format
+msgid "Page %1$d of %2$d"
+msgstr "Página %1$d de %2$d"
+
+#: templates/dashboard.html.twig:424
+msgid "Next"
+msgstr "Siguientes"
+
+#: templates/dashboard.html.twig:432
+msgid "Mail notifications are turned off in the plugin configuration: the alerts are recorded here, but not sent."
+msgstr "Las notificaciones por correo están apagadas en la configuración del plugin: los avisos se registran aquí, pero no se envían."
+
+#: templates/dashboard.html.twig:433
+msgid "Recipients and texts: Setup > Notifications (type \"DMARC alert\")."
+msgstr "Destinatarios y textos: Configuración > Notificaciones (tipo «Aviso DMARC»)."
+
+#: templates/dashboard.html.twig:436
+msgid "All alerts"
+msgstr "Todos los avisos"
+
+#: templates/dashboard.html.twig:436
+msgid "Open alerts"
+msgstr "Avisos abiertos"
+
+#: templates/dashboard.html.twig:437
+msgid "Show only the open ones"
+msgstr "Ver solo los abiertos"
+
+#: templates/dashboard.html.twig:437
+msgid "Show the closed ones too"
+msgstr "Ver también los cerrados"
+
+#: templates/dashboard.html.twig:439 src/NotificationTargetAlert.php:115
+msgid "Date"
+msgstr "Fecha"
+
+#: templates/dashboard.html.twig:439 src/NotificationTargetAlert.php:103
+msgid "Event"
+msgstr "Evento"
+
+#: templates/dashboard.html.twig:439 src/NotificationTargetAlert.php:104
+msgid "Message"
+msgstr "Mensaje"
+
+#: templates/dashboard.html.twig:439
+msgid "Times"
+msgstr "Veces"
+
+#: templates/dashboard.html.twig:439
+msgid "Notified"
+msgstr "Notificado"
+
+#: templates/dashboard.html.twig:449
+msgid "Open"
+msgstr "Abierto"
+
+#: templates/dashboard.html.twig:449
+msgid "Closed"
+msgstr "Cerrado"
+
+#: templates/dashboard.html.twig:453
+msgid "Close"
+msgstr "Cerrar"
+
+#: templates/dashboard.html.twig:456
+msgid "No alerts."
+msgstr "No hay avisos."
+
+#: templates/dashboard.html.twig:463
+msgid "importing files"
+msgstr "importando ficheros"
+
+#: templates/dashboard.html.twig:463
+msgid "collecting from the mailbox"
+msgstr "recogiendo del buzón"
+
+#: templates/dashboard.html.twig:463
+msgid "reading mails again"
+msgstr "volviendo a leer correos"
+
+#: templates/dashboard.html.twig:469
+msgid "Background job running"
+msgstr "Trabajo en segundo plano en marcha"
+
+#: templates/dashboard.html.twig:471
+#, php-format
+msgid "%d new report"
+msgid_plural "%d new reports"
+msgstr[0] "%d informe nuevo"
+msgstr[1] "%d informes nuevos"
+
+#: templates/dashboard.html.twig:475
+msgid "GLPI keeps working normally; this page refreshes itself."
+msgstr "GLPI sigue funcionando con normalidad; esta página se actualiza sola."
+
+#: templates/dashboard.html.twig:477
+msgid "The background job did not start."
+msgstr "El trabajo en segundo plano no ha arrancado."
+
+#: templates/dashboard.html.twig:480
+msgid "Last background job"
+msgstr "Último trabajo en segundo plano"
+
+#: templates/dashboard.html.twig:481 src/Command/CollectCommand.php:239 src/Cron.php:141 src/Cron.php:182 src/Importer.php:77
+msgid "Error"
+msgstr "Error"
+
+#: templates/dashboard.html.twig:490 front/action.php:98
+msgid "The mailbox is not configured."
+msgstr "El buzón no está configurado."
+
+#: templates/dashboard.html.twig:490
+msgid "Configure it"
+msgstr "Configurarlo"
+
+#: templates/dashboard.html.twig:493
+msgid "Server"
+msgstr "Servidor"
+
+#: templates/dashboard.html.twig:494
+msgid "Account"
+msgstr "Cuenta"
+
+#: templates/dashboard.html.twig:494
+msgid "Google OAuth"
+msgstr "OAuth de Google"
+
+#: templates/dashboard.html.twig:494
+msgid "user and password"
+msgstr "usuario y contraseña"
+
+#: templates/dashboard.html.twig:495
+msgid "Folder"
+msgstr "Carpeta"
+
+#: templates/dashboard.html.twig:496
+msgid "Mode"
+msgstr "Modo"
+
+#: templates/dashboard.html.twig:496
+msgid "read-write"
+msgstr "con escritura"
+
+#: templates/dashboard.html.twig:497
+msgid "marks the processed mails as read"
+msgstr "marca como leído lo procesado"
+
+#: templates/dashboard.html.twig:497
+#, php-format
+msgid "moves the processed mails to \"%s\""
+msgstr "mueve lo procesado a «%s»"
+
+#: templates/dashboard.html.twig:497
+msgid "deletes the processed mails"
+msgstr "borra lo procesado"
+
+#: templates/dashboard.html.twig:498
+msgid "read-only"
+msgstr "solo lectura"
+
+#: templates/dashboard.html.twig:498
+msgid "nothing is changed in the mailbox"
+msgstr "no se cambia nada en el buzón"
+
+#: templates/dashboard.html.twig:499
+msgid "Last collection"
+msgstr "Última recogida"
+
+#: templates/dashboard.html.twig:500
+msgid "Last successful"
+msgstr "Última correcta"
+
+#: templates/dashboard.html.twig:501
+msgid "Last error"
+msgstr "Último error"
+
+#: templates/dashboard.html.twig:501
+#, php-format
+msgid "%d in a row"
+msgid_plural "%d in a row"
+msgstr[0] "%d seguido"
+msgstr[1] "%d seguidos"
+
+#: templates/dashboard.html.twig:502
+msgid "Progress"
+msgstr "Progreso"
+
+#: templates/dashboard.html.twig:509
+msgid "Collect now"
+msgstr "Recoger ahora"
+
+#: templates/dashboard.html.twig:511
+msgid "It runs in the background: it collects everything pending (up to about 50 minutes each time) without blocking GLPI."
+msgstr "Se hace en segundo plano: recoge todo lo pendiente (hasta unos 50 minutos por vez) sin bloquear GLPI."
+
+#: templates/dashboard.html.twig:517
+msgid "Import files"
+msgstr "Importar ficheros"
+
+#: templates/dashboard.html.twig:523
+msgid "Import"
+msgstr "Importar"
+
+#: templates/dashboard.html.twig:525
+msgid "Saved mails (.eml) or single reports (.zip, .gz, .xml). Reports already imported are not duplicated."
+msgstr "Correos guardados (.eml) o informes sueltos (.zip, .gz, .xml). Los informes que ya estén no se duplican."
+
+#: templates/dashboard.html.twig:526
+msgid "For many files, from the console:"
+msgstr "Para muchos ficheros, por consola:"
+
+#: templates/dashboard.html.twig:528
+msgid "The DMARC \"Update\" right is needed."
+msgstr "Hace falta el derecho «Actualizar» de DMARC."
+
+#: templates/dashboard.html.twig:536
+msgid "Processed mails (last 200)"
+msgstr "Correos procesados (últimos 200)"
+
+#: templates/dashboard.html.twig:547
+msgid "Processed"
+msgstr "Procesado"
+
+#: templates/dashboard.html.twig:547
+msgid "Origin"
+msgstr "Origen"
+
+#: templates/dashboard.html.twig:547
+msgid "Mail date"
+msgstr "Fecha del correo"
+
+#: templates/dashboard.html.twig:547
+msgid "Subject / file"
+msgstr "Asunto / fichero"
+
+#: templates/dashboard.html.twig:547
+msgid "Mailbox action"
+msgstr "Acción en el buzón"
+
+#: templates/dashboard.html.twig:563
+msgid "No mail processed."
+msgstr "Ningún correo procesado."
+
+#: templates/dashboard.html.twig:566
+msgid "Reprocess the selected ones"
+msgstr "Reprocesar los marcados"
+
+#: templates/dashboard.html.twig:567
+msgid "Reads them again from the mailbox (with errors or skipped)."
+msgstr "Vuelve a leerlos del buzón (con error u omitidos)."
+
+#: templates/dashboard.html.twig:577
+msgid "Fail"
+msgstr "No cumple"
+
+#: templates/dashboard.html.twig:578
+msgid "Fail (delivered)"
+msgstr "No cumple (entregado)"
+
+#: templates/dashboard.html.twig:579
+msgid "Fail (quarantine)"
+msgstr "No cumple (cuarentena)"
+
+#: templates/dashboard.html.twig:580
+msgid "Fail (rejected)"
+msgstr "No cumple (rechazado)"
+
+#: templates/dashboard.html.twig:586
+msgid "Select at least one domain."
+msgstr "Marque al menos un dominio."
+
+#: templates/macros.html.twig:16
+#, php-format
+msgid "%d %% abuse confidence"
+msgstr "%d %% de confianza de abuso"
+
+#: templates/macros.html.twig:17 src/AbuseIpdb.php:264
+#, php-format
+msgid "%d report in 90 days"
+msgid_plural "%d reports in 90 days"
+msgstr[0] "%d denuncia en 90 días"
+msgstr[1] "%d denuncias en 90 días"
+
+#: templates/macros.html.twig:18
+#, php-format
+msgid "Country: %s"
+msgstr "País: %s"
+
+#: templates/macros.html.twig:19
+#, php-format
+msgid "Provider: %s"
+msgstr "Proveedor: %s"
+
+#: templates/macros.html.twig:20
+#, php-format
+msgid "Usage: %s"
+msgstr "Uso: %s"
+
+#: templates/macros.html.twig:21
+#, php-format
+msgid "Domain: %s"
+msgstr "Dominio: %s"
+
+#: templates/macros.html.twig:22 src/AbuseIpdb.php:272
+msgid "Tor node"
+msgstr "nodo Tor"
+
+#: templates/macros.html.twig:23
+#, php-format
+msgid "Checked on %s"
+msgstr "Consultado el %s"
+
+#: templates/macros.html.twig:30
+#, php-format
+msgid "Error in the last query: %s"
+msgstr "Error en la última consulta: %s"
+
+#: templates/macros.html.twig:30
+msgid "Not checked in AbuseIPDB yet: it is checked in the background"
+msgstr "Todavía sin consultar en AbuseIPDB: se consulta en segundo plano"
+
+#: templates/report.html.twig:7
+#, php-format
+msgid "Report from %1$s for %2$s"
+msgstr "Informe de %1$s para %2$s"
+
+#: templates/report.html.twig:12
+msgid "Header"
+msgstr "Cabecera"
+
+#: templates/report.html.twig:15
+msgid "Contact"
+msgstr "Contacto"
+
+#: templates/report.html.twig:18
+#, php-format
+msgid "%s pass"
+msgstr "cumple el %s"
+
+#: templates/report.html.twig:19
+msgid "Version"
+msgstr "Versión"
+
+#: templates/report.html.twig:20
+msgid "Errors"
+msgstr "Errores"
+
+#: templates/report.html.twig:21
+msgid "Mail"
+msgstr "Correo"
+
+#: templates/report.html.twig:28
+msgid "subdomains"
+msgstr "subdominios"
+
+#: templates/report.html.twig:28
+msgid "(inherits p)"
+msgstr "(hereda p)"
+
+#: templates/report.html.twig:29
+msgid "non-existent"
+msgstr "inexistentes"
+
+#: templates/report.html.twig:31
+msgid "Alignment"
+msgstr "Alineación"
+
+#: templates/report.html.twig:31 templates/report.html.twig:31
+msgid "strict"
+msgstr "estricta"
+
+#: templates/report.html.twig:31 templates/report.html.twig:31
+msgid "relaxed"
+msgstr "relajada"
+
+#: templates/report.html.twig:39
+#, php-format
+msgid "%d row"
+msgid_plural "%d rows"
+msgstr[0] "%d fila"
+msgstr[1] "%d filas"
+
+#: templates/report.html.twig:41
+msgid "Applied"
+msgstr "Aplicado"
+
+#: templates/report.html.twig:41
+msgid "DKIM / SPF (DMARC)"
+msgstr "DKIM / SPF (DMARC)"
+
+#: templates/report.html.twig:41
+msgid "Result"
+msgstr "Resultado"
+
+#: templates/report.html.twig:41
+msgid "From / envelope / recipient"
+msgstr "From / sobre / destino"
+
+#: templates/report.html.twig:53
+#, php-format
+msgid "Reason: %s"
+msgstr "Motivo: %s"
+
+#: templates/report.html.twig:54
+#, php-format
+msgid "to: %s"
+msgstr "para: %s"
+

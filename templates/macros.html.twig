@@ -1,0 +1,33 @@
+{# Macros shared by the DMARC pages #}
+
+{# Numbers in the user's preferred format #}
+{% macro num(n) %}<span class="text-nowrap">{{ (n ?? 0)|formatted_integer }}</span>{% endmacro %}
+{% macro pct(n) %}<span class="text-nowrap">{{ call('Html::formatNumber', [n ?? 0, false, 1]) }} %</span>{% endmacro %}
+
+{# AbuseIPDB reputation of a source: % badge with a link to abuseipdb.com and a short line below.
+   s: row with ip, abuse_public, abuse_score, abuse_reports, abuse_country, abuse_isp, abuse_usage,
+      abuse_domain, abuse_tor, abuse_date, abuse_error #}
+{% macro abuse(s, details = true) %}
+  {%- if s.abuse_public ?? false -%}
+    {%- set link = 'https://www.abuseipdb.com/check/' ~ (s.ip|url_encode) -%}
+    {%- if s.abuse_score is not null and s.abuse_score != '' -%}
+      {%- set score = s.abuse_score + 0 -%}
+      {%- set color = score >= 75 ? 'red' : (score >= 25 ? 'orange' : (score > 0 ? 'yellow' : 'green')) -%}
+      {%- set tip = ['AbuseIPDB: ' ~ __('%d %% abuse confidence', 'dmarc')|format(score),
+        _n('%d report in 90 days', '%d reports in 90 days', s.abuse_reports ?? 0, 'dmarc')|format(s.abuse_reports ?? 0),
+        s.abuse_country ? __('Country: %s', 'dmarc')|format(s.abuse_country) : '',
+        s.abuse_isp ? __('Provider: %s', 'dmarc')|format(s.abuse_isp) : '',
+        s.abuse_usage ? __('Usage: %s', 'dmarc')|format(s.abuse_usage) : '',
+        s.abuse_domain ? __('Domain: %s', 'dmarc')|format(s.abuse_domain) : '',
+        s.abuse_tor ? __('Tor node', 'dmarc') : '',
+        s.abuse_date ? __('Checked on %s', 'dmarc')|format(s.abuse_date|formatted_date) : '']|filter(v => v != '')|join(' · ') -%}
+      <a href="{{ link }}" target="_blank" rel="noopener noreferrer" class="badge bg-{{ color }}-lt text-nowrap" title="{{ tip }}">AbuseIPDB {{ score }} %</a>
+      {%- if details and (s.abuse_country or s.abuse_isp) -%}
+        <div class="small text-muted text-truncate" style="max-width: 14rem" title="{{ tip }}">{{ [s.abuse_country, s.abuse_isp]|filter(v => v)|join(' · ') }}</div>
+      {%- endif -%}
+    {%- else -%}
+      <a href="{{ link }}" target="_blank" rel="noopener noreferrer" class="badge bg-secondary-lt text-nowrap"
+         title="{{ s.abuse_error ? __('Error in the last query: %s', 'dmarc')|format(s.abuse_error) : __('Not checked in AbuseIPDB yet: it is checked in the background', 'dmarc') }}">AbuseIPDB …</a>
+    {%- endif -%}
+  {%- endif -%}
+{% endmacro %}

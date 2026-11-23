@@ -1,0 +1,65 @@
+{# One DMARC report #}
+{% set r = report %}
+{% import '@dmarc/macros.html.twig' as dm %}
+<div class="container-fluid">
+  <div class="d-flex align-items-center gap-2 mb-3">
+    <a href="{{ dashboard }}" class="btn btn-sm btn-outline-secondary"><i class="ti ti-arrow-left"></i> {{ __('Reports', 'dmarc') }}</a>
+    <h2 class="mb-0">{{ __('Report from %1$s for %2$s', 'dmarc')|format(r.org_name, r.domain) }}</h2>
+    {% if has_raw %}<a href="{{ self }}?id={{ r.id }}&raw=1" class="btn btn-sm btn-outline-primary ms-auto"><i class="ti ti-download"></i> {{ __('Original XML', 'dmarc') }}</a>{% endif %}
+  </div>
+
+  <div class="row row-cards mb-3">
+    <div class="col-lg-6"><div class="card h-100"><div class="card-header"><h3 class="card-title">{{ __('Header', 'dmarc') }}</h3></div><div class="card-body">
+      <dl class="row mb-0 small">
+        <dt class="col-4">{{ __('Organization', 'dmarc') }}</dt><dd class="col-8">{{ r.org_name }}{% if r.org_email %} &lt;{{ r.org_email }}&gt;{% endif %}</dd>
+        {% if r.extra_contact %}<dt class="col-4">{{ __('Contact', 'dmarc') }}</dt><dd class="col-8">{{ r.extra_contact }}</dd>{% endif %}
+        <dt class="col-4">{{ __('Report ID', 'dmarc') }}</dt><dd class="col-8 font-monospace" style="overflow-wrap:anywhere">{{ r.report_id }}</dd>
+        <dt class="col-4">{{ __('Period', 'dmarc') }}</dt><dd class="col-8">{{ r.date_begin|formatted_datetime }} – {{ r.date_end|formatted_datetime }}</dd>
+        <dt class="col-4">{{ __('Messages', 'dmarc') }}</dt><dd class="col-8">{{ dm.num(r.total) }} ({{ __('%s pass', 'dmarc')|format(dm.pct(r.total > 0 ? 100 * r.pass / r.total : 0)|striptags) }})</dd>
+        {% if r.version %}<dt class="col-4">{{ __('Version', 'dmarc') }}</dt><dd class="col-8">{{ r.version }}</dd>{% endif %}
+        {% if r.errors %}<dt class="col-4 text-red">{{ __('Errors', 'dmarc') }}</dt><dd class="col-8 text-red" style="white-space: pre-wrap">{{ r.errors }}</dd>{% endif %}
+        {% if message %}<dt class="col-4">{{ __('Mail', 'dmarc') }}</dt><dd class="col-8">{{ message.subject ?: message.filename }}<div class="text-muted">{{ message.sender }} · {{ message.date_mail ? message.date_mail|formatted_datetime }}</div></dd>{% endif %}
+      </dl>
+    </div></div></div>
+    <div class="col-lg-6"><div class="card h-100"><div class="card-header"><h3 class="card-title">{{ __('Published policy', 'dmarc') }}</h3></div><div class="card-body">
+      <dl class="row mb-0 small">
+        <dt class="col-4">{{ __('Domain', 'dmarc') }}</dt><dd class="col-8">{{ r.domain }}</dd>
+        <dt class="col-4">p</dt><dd class="col-8">{{ r.p ?: '—' }}</dd>
+        <dt class="col-4">sp ({{ __('subdomains', 'dmarc') }})</dt><dd class="col-8">{{ r.sp ?: __('(inherits p)', 'dmarc') }}</dd>
+        {% if r.np %}<dt class="col-4">np ({{ __('non-existent', 'dmarc') }})</dt><dd class="col-8">{{ r.np }}</dd>{% endif %}
+        <dt class="col-4">pct</dt><dd class="col-8">{{ r.pct ?? 100 }}</dd>
+        <dt class="col-4">{{ __('Alignment', 'dmarc') }}</dt><dd class="col-8">DKIM {{ r.adkim == 's' ? __('strict', 'dmarc') : __('relaxed', 'dmarc') }} · SPF {{ r.aspf == 's' ? __('strict', 'dmarc') : __('relaxed', 'dmarc') }}</dd>
+        {% if r.fo %}<dt class="col-4">fo</dt><dd class="col-8">{{ r.fo }}</dd>{% endif %}
+        {% if r.testing %}<dt class="col-4">testing</dt><dd class="col-8">{{ r.testing }}</dd>{% endif %}
+      </dl>
+    </div></div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><h3 class="card-title">{{ _n('%d row', '%d rows', records|length, 'dmarc')|format(records|length) }}</h3></div>
+    <div class="table-responsive"><table class="table table-sm card-table">
+      <thead><tr><th>IP</th><th>{{ __('Sender', 'dmarc') }}</th><th class="text-end">{{ __('Messages', 'dmarc') }}</th><th>{{ __('Applied', 'dmarc') }}</th><th>{{ __('DKIM / SPF (DMARC)', 'dmarc') }}</th><th>{{ __('Result', 'dmarc') }}</th><th>{{ __('From / envelope / recipient', 'dmarc') }}</th><th>{{ __('Authentication', 'dmarc') }}</th></tr></thead>
+      <tbody>
+      {% for rec in records %}
+        <tr>
+          <td><span class="font-monospace">{{ rec.ip }}</span><div>{{ dm.abuse(rec) }}</div></td>
+          <td class="small">{{ rec.sender ?: '—' }}<div class="text-muted">{{ rec.ptr }}</div><div>{{ source_statuses[rec.source_status] ?? '' }}</div></td>
+          <td class="text-end">{{ dm.num(rec.count) }}</td>
+          <td>{{ rec.disposition }}</td>
+          <td><span class="badge bg-{{ rec.dkim_eval == 'pass' ? 'green' : 'red' }}-lt">DKIM {{ rec.dkim_eval ?: '—' }}</span>
+              <span class="badge bg-{{ rec.spf_eval == 'pass' ? 'green' : 'red' }}-lt">SPF {{ rec.spf_eval ?: '—' }}</span></td>
+          <td style="white-space: normal; max-width: 24rem"><b class="{{ rec.dmarc_pass ? 'text-green' : 'text-red' }}">{{ cause_labels[rec.cause] ?? rec.cause }}</b>
+            {% if rec.explain %}<div class="small text-muted">{{ rec.explain }}</div>{% endif %}
+            {% if rec.reasons %}<div class="small">{{ __('Reason: %s', 'dmarc')|format(rec.reasons) }}</div>{% endif %}</td>
+          <td class="small">{{ rec.header_from }}{% if rec.envelope_from %}<div class="text-muted">{{ __('envelope: %s', 'dmarc')|format(rec.envelope_from) }}</div>{% endif %}{% if rec.envelope_to %}<div class="text-muted">{{ __('to: %s', 'dmarc')|format(rec.envelope_to) }}</div>{% endif %}</td>
+          <td class="small" style="white-space: normal; overflow-wrap: anywhere; max-width: 22rem">
+            {% for a in rec.auth %}
+              <div><span class="badge bg-secondary-lt">{{ a.type|upper }}</span> {{ a.domain }}{% if a.selector %} <span class="text-muted">s={{ a.selector }}</span>{% endif %}{% if a.scope %} <span class="text-muted">{{ a.scope }}</span>{% endif %}
+                → <b class="{{ a.result == 'pass' ? 'text-green' : 'text-red' }}">{{ a.result }}</b>{% if a.human_result %} <span class="text-muted">({{ a.human_result }})</span>{% endif %}</div>
+            {% else %}—{% endfor %}
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody></table></div>
+  </div>
+</div>

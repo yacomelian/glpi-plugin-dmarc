@@ -1,0 +1,82 @@
+<root>
+   <name>DMARC</name>
+   <key>dmarc</key>
+   <state>stable</state>
+   <logo>https://raw.githubusercontent.com/__REPO__/main/dmarc.png</logo>
+   <description>
+      <short>
+         <en>Collects the DMARC aggregate reports of your domains from an IMAP mailbox (Gmail with OAuth or any IMAP server) and shows who sends mail as your domains, what fails and why.</en>
+         <fr>Collecte les rapports agrégés DMARC de vos domaines depuis une boîte IMAP (Gmail avec OAuth ou tout serveur IMAP) et montre qui envoie des courriels au nom de vos domaines, ce qui échoue et pourquoi.</fr>
+         <es>Recoge de un buzón IMAP (Gmail con OAuth o cualquier servidor IMAP) los informes agregados DMARC de sus dominios y muestra quién envía correo como sus dominios, qué falla y por qué.</es>
+      </short>
+      <long>
+         <en><![CDATA[
+DMARC aggregate reports (RUA) tell you which servers send mail as your domains and whether that mail passes SPF, DKIM and DMARC. This plugin collects them and turns them into a dashboard in **Tools › DMARC**.
+
+- **Collection** from one IMAP folder, in the background: Gmail / Google Workspace with **OAuth** (consent of the mailbox owner, no service account) or user and password on any IMAP server. **Read-only** by default; optional read-write mode (mark as read, move or delete).
+- **Parsing** of RFC 7489 and DMARCbis reports (zip, gzip, XML) with size limits and no DTD/entities; manual import of .eml/.zip/.gz/.xml files.
+- **Dashboard**: summary per domain, evolution, sending sources (reverse name, provider and optional **AbuseIPDB** reputation), failures grouped by cause with an explanation, recommendations to move from p=none to quarantine and reject, reports with their original XML.
+- **Classification** of the sources: authorized, forwarder or unauthorized.
+- **GLPI notifications**: unauthorized source, failing authorized source, domain without reports, collection errors and a weekly summary.
+- Filters by period, one or several domains and reporting organization; plugin entity; own profile right; retention up to 36 months.
+- Secrets encrypted by GLPI, GLPI query builder only, English and Spanish translations.
+]]></en>
+         <fr><![CDATA[
+Les rapports agrégés DMARC (RUA) indiquent quels serveurs envoient des courriels au nom de vos domaines et s'ils passent SPF, DKIM et DMARC. Ce plugin les collecte et les présente dans un tableau de bord sous **Outils › DMARC**.
+
+- **Collecte** depuis un dossier IMAP, en arrière-plan : Gmail / Google Workspace avec **OAuth** (consentement du propriétaire de la boîte) ou utilisateur et mot de passe sur tout serveur IMAP. **Lecture seule** par défaut.
+- **Analyse** des rapports RFC 7489 et DMARCbis (zip, gzip, XML) ; import manuel de fichiers.
+- **Tableau de bord** : résumé par domaine, évolution, sources d'envoi (nom inverse, fournisseur, réputation **AbuseIPDB** optionnelle), échecs par cause, recommandations, rapports.
+- **Notifications GLPI** et résumé hebdomadaire.
+]]></fr>
+         <es><![CDATA[
+Los informes agregados DMARC (RUA) indican qué servidores envían correo como sus dominios y si ese correo cumple SPF, DKIM y DMARC. Este plugin los recoge y los muestra en un cuadro de mando en **Herramientas › DMARC**.
+
+- **Recogida** de una carpeta IMAP en segundo plano: Gmail / Google Workspace con **OAuth** (consentimiento del dueño del buzón, sin cuenta de servicio) o usuario y contraseña en cualquier servidor IMAP. **Solo lectura** por defecto.
+- **Análisis** de informes RFC 7489 y DMARCbis (zip, gzip, XML); importación manual de ficheros.
+- **Cuadro de mando**: resumen por dominio, evolución, fuentes de envío (nombre inverso, proveedor y reputación de **AbuseIPDB** opcional), fallos por causa con explicación, recomendaciones y los informes con su XML original.
+- **Notificaciones de GLPI** y resumen semanal.
+]]></es>
+      </long>
+   </description>
+   <homepage>https://github.com/__REPO__</homepage>
+   <download>https://github.com/__REPO__/releases</download>
+   <issues>https://github.com/__REPO__/issues</issues>
+   <readme>https://github.com/__REPO__/blob/main/README.md</readme>
+   <authors>
+      <author>Yaco Melian</author>
+   </authors>
+   <versions>
+      <version>
+         <num>1.0.0</num>
+         <compatibility>~11.0.0</compatibility>
+         <compatibility>~12.0.0</compatibility>
+         <download_url>https://github.com/__REPO__/releases/download/1.0.0/glpi-dmarc-1.0.0.tar.bz2</download_url>
+      </version>
+   </versions>
+   <langs>
+      <lang>en_GB</lang>
+      <lang>es_ES</lang>
+   </langs>
+   <license>GPL v2+</license>
+   <tags>
+      <en>
+         <tag>DMARC</tag>
+         <tag>SPF</tag>
+         <tag>DKIM</tag>
+         <tag>email security</tag>
+         <tag>IMAP</tag>
+         <tag>reports</tag>
+      </en>
+      <fr>
+         <tag>DMARC</tag>
+         <tag>sécurité de la messagerie</tag>
+         <tag>rapports</tag>
+      </fr>
+      <es>
+         <tag>DMARC</tag>
+         <tag>seguridad del correo</tag>
+         <tag>informes</tag>
+      </es>
+   </tags>
+</root>
