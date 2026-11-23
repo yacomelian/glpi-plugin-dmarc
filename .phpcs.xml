@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<ruleset name="DMARC">
+    <description>GLPI coding standard</description>
+    <file>.</file>
+    <exclude-pattern>/vendor/</exclude-pattern>
+    <exclude-pattern>/node_modules/</exclude-pattern>
+    <arg name="extensions" value="php"/>
+    <arg name="colors"/>
+    <arg value="p"/>
+    <rule ref="vendor/glpi-project/coding-standard/GlpiStandard/"/>
+</ruleset>
