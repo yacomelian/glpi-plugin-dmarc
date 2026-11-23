@@ -1,0 +1,42 @@
+name: Release
+
+# Publish a release "X.Y.Z" on GitHub (Releases > Draft a new release > create the tag X.Y.Z): this builds
+# glpi-dmarc-X.Y.Z.tar.bz2 (GLPI catalog) and .tar.gz (installer), top folder "dmarc/", with their SHA-256,
+# and attaches them to that release. The tag must match PLUGIN_DMARC_VERSION (setup.php), dmarc.xml and CHANGELOG.md.
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check the version
+        run: |
+          tag="${GITHUB_REF_NAME}"
+          grep -q "define('PLUGIN_DMARC_VERSION', '${tag}')" setup.php || { echo "setup.php is not version ${tag}"; exit 1; }
+          grep -q "<num>${tag}</num>" dmarc.xml || { echo "dmarc.xml has no version ${tag}"; exit 1; }
+          grep -q "## \[${tag}\]" CHANGELOG.md || { echo "CHANGELOG.md has no entry ${tag}"; exit 1; }
+      - name: Compile the translations
+        run: |
+          sudo apt-get install -y -qq gettext > /dev/null
+          for po in locales/*.po; do msgfmt --check -o "${po%.po}.mo" "$po"; done
+      - name: Build the archive
+        run: |
+          tag="${GITHUB_REF_NAME}"
+          mkdir -p dist build
+          git archive --format=tar --prefix=dmarc/ HEAD | tar -x -C build
+          cp locales/*.mo build/dmarc/locales/
+          tar -C build -cjf "dist/glpi-dmarc-${tag}.tar.bz2" dmarc
+          tar -C build -czf "dist/glpi-dmarc-${tag}.tar.gz" dmarc
+          (cd dist && for f in glpi-dmarc-*.tar.*; do sha256sum "$f" > "$f.sha256"; done)
+          tar -tjf "dist/glpi-dmarc-${tag}.tar.bz2" | head -n 5
+      - name: Attach the files to the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload "${GITHUB_REF_NAME}" dist/glpi-dmarc-* --clobber
