@@ -1,5 +1,5 @@
 {
-    "name": "__REPO__",
+    "name": "yacomelian/glpi-plugin-dmarc",
     "description": "DMARC aggregate reports for GLPI",
     "type": "glpi-plugin",
     "license": "GPL-2.0-or-later",

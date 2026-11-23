@@ -2,11 +2,11 @@
 # -------------------------------------------------------------------------
 # DMARC plugin for GLPI — installer
 # Copyright (C) 2026 Yaco Melian — GPLv2+
-# https://github.com/__REPO__
+# https://github.com/yacomelian/glpi-plugin-dmarc
 # -------------------------------------------------------------------------
 #
-#   curl -fsSL https://raw.githubusercontent.com/__REPO__/main/install.sh | bash
-#   curl -fsSL https://raw.githubusercontent.com/__REPO__/main/install.sh | bash -s -- --path /var/www/glpi --yes
+#   curl -fsSL https://raw.githubusercontent.com/yacomelian/glpi-plugin-dmarc/main/install.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/yacomelian/glpi-plugin-dmarc/main/install.sh | bash -s -- --path /var/www/glpi --yes
 #
 # Asks for the GLPI folder, checks that it is GLPI 11 or 12, downloads the
 # release (and checks its SHA-256), keeps a backup of a previous version,
@@ -14,7 +14,7 @@
 # Run it on the GLPI server, as root or as the user that owns GLPI.
 set -euo pipefail
 
-REPO="${DMARC_REPO:-__REPO__}"
+REPO="${DMARC_REPO:-yacomelian/glpi-plugin-dmarc}"
 PLUGIN="dmarc"
 GLPI_PATH=""
 VERSION=""

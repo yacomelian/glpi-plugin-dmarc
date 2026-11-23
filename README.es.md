@@ -52,7 +52,7 @@ Opciones: `--path /var/www/glpi`, `--version 1.0.0`, `--container NOMBRE` (GLPI 
 
 ### Manual
 
-1. Descargue `glpi-dmarc-X.Y.Z.tar.bz2` de las [versiones publicadas](https://github.com/__REPO__/releases).
+1. Descargue `glpi-dmarc-X.Y.Z.tar.bz2` de las [versiones publicadas](https://github.com/yacomelian/glpi-plugin-dmarc/releases).
 2. Descomprímalo en la carpeta `plugins/` (o `marketplace/`) de GLPI: crea `dmarc/`.
 3. `php bin/console glpi:plugin:install dmarc -u glpi` y `php bin/console glpi:plugin:activate dmarc`.
 

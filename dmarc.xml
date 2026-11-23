@@ -2,7 +2,7 @@
    <name>DMARC</name>
    <key>dmarc</key>
    <state>stable</state>
-   <logo>https://raw.githubusercontent.com/__REPO__/main/dmarc.png</logo>
+   <logo>https://raw.githubusercontent.com/yacomelian/glpi-plugin-dmarc/main/dmarc.png</logo>
    <description>
       <short>
          <en>Collects the DMARC aggregate reports of your domains from an IMAP mailbox (Gmail with OAuth or any IMAP server) and shows who sends mail as your domains, what fails and why.</en>
@@ -39,10 +39,10 @@ Los informes agregados DMARC (RUA) indican qué servidores envían correo como s
 ]]></es>
       </long>
    </description>
-   <homepage>https://github.com/__REPO__</homepage>
-   <download>https://github.com/__REPO__/releases</download>
-   <issues>https://github.com/__REPO__/issues</issues>
-   <readme>https://github.com/__REPO__/blob/main/README.md</readme>
+   <homepage>https://github.com/yacomelian/glpi-plugin-dmarc</homepage>
+   <download>https://github.com/yacomelian/glpi-plugin-dmarc/releases</download>
+   <issues>https://github.com/yacomelian/glpi-plugin-dmarc/issues</issues>
+   <readme>https://github.com/yacomelian/glpi-plugin-dmarc/blob/main/README.md</readme>
    <authors>
       <author>Yaco Melian</author>
    </authors>
@@ -51,7 +51,7 @@ Los informes agregados DMARC (RUA) indican qué servidores envían correo como s
          <num>1.0.0</num>
          <compatibility>~11.0.0</compatibility>
          <compatibility>~12.0.0</compatibility>
-         <download_url>https://github.com/__REPO__/releases/download/1.0.0/glpi-dmarc-1.0.0.tar.bz2</download_url>
+         <download_url>https://github.com/yacomelian/glpi-plugin-dmarc/releases/download/1.0.0/glpi-dmarc-1.0.0.tar.bz2</download_url>
       </version>
    </versions>
    <langs>

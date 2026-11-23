@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: DMARC\n"
-"Report-Msgid-Bugs-To: https://github.com/__REPO__/issues\n"
+"Report-Msgid-Bugs-To: https://github.com/yacomelian/glpi-plugin-dmarc/issues\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"

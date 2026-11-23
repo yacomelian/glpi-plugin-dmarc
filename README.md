@@ -63,7 +63,7 @@ curl -fsSL https://raw.githubusercontent.com/yacomelian/main/install.sh | bash -
 
 ### Manual
 
-1. Download `glpi-dmarc-X.Y.Z.tar.bz2` from the [releases](https://github.com/__REPO__/releases).
+1. Download `glpi-dmarc-X.Y.Z.tar.bz2` from the [releases](https://github.com/yacomelian/glpi-plugin-dmarc/releases).
 2. Extract it into GLPI's `plugins/` (or `marketplace/`) folder: it creates `dmarc/`.
 3. `php bin/console glpi:plugin:install dmarc -u glpi` and `php bin/console glpi:plugin:activate dmarc`
 (or Setup › Plugins in the web interface).

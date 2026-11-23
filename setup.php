@@ -24,7 +24,7 @@
  * -------------------------------------------------------------------------
  * @copyright Copyright (C) 2026 by Yaco Melian.
  * @license   GPLv2+ https://www.gnu.org/licenses/gpl-2.0.html
- * @link      https://github.com/__REPO__
+ * @link      https://github.com/yacomelian/glpi-plugin-dmarc
  * -------------------------------------------------------------------------
  */
 
@@ -89,7 +89,7 @@ function plugin_version_dmarc(): array
         'version'      => PLUGIN_DMARC_VERSION,
         'author'       => 'Yaco Melian',
         'license'      => 'GPLv2+',
-        'homepage'     => 'https://github.com/__REPO__',
+        'homepage'     => 'https://github.com/yacomelian/glpi-plugin-dmarc',
         'requirements' => [
             'glpi' => [
                 'min' => PLUGIN_DMARC_MIN_GLPI_VERSION,
